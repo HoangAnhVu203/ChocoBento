@@ -12,10 +12,20 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
 
     public Vector2Int SizeInCells => sizeInCells;
     public IReadOnlyList<Transform> Cells => cells;
+    public bool IsInTargetTray { get; private set; }
+
+    public IReadOnlyList<Transform> RefreshedCells
+    {
+        get
+        {
+            RefreshCells();
+            return cells;
+        }
+    }
 
     private void Awake()
     {
-        RefreshCells();
+        RefreshCells(true);
         EnsureCollider();
         lastValidPosition = transform.position;
     }
@@ -26,16 +36,18 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
         EnsureCollider();
     }
 
-    public void Configure(Vector2Int newSize)
+    public void Configure(Vector2Int newSize, bool rebuildCellOffsets = true)
     {
         sizeInCells = newSize;
-        RefreshCells();
+        RefreshCells(rebuildCellOffsets);
         EnsureCollider();
     }
 
     public void BeginDrag(Vector3 pointerWorldPosition)
     {
         GameplayLevelController.Instance?.SetSelectedPiece(this);
+        SetInTargetTray(false);
+        ClearStrawberryMismatchMarkers();
         dragOffset = transform.position - pointerWorldPosition;
     }
 
@@ -51,10 +63,29 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
             return;
         }
 
+        var previousValidPosition = lastValidPosition;
         transform.position = GridManager.Instance.SnapWorldToCell(transform.position);
         GameplayLevelController.Instance?.ResolvePieceOverlap(this);
-        lastValidPosition = transform.position;
-        TargetTray.Instance?.TryAccept(this);
+
+        var acceptedByTray = false;
+        var rejectedByTray = false;
+        if (TargetTray.Instance != null)
+        {
+            acceptedByTray = TargetTray.Instance.TryAccept(this);
+            rejectedByTray = TargetTray.Instance.LastPlacementRejected;
+        }
+
+        if (rejectedByTray)
+        {
+            transform.position = previousValidPosition;
+        }
+        else
+        {
+            lastValidPosition = transform.position;
+        }
+
+        SetInTargetTray(acceptedByTray);
+        GameplayLevelController.Instance?.LogTargetTrayProgress();
     }
 
     public bool ContainsWorldPoint(Vector3 worldPosition)
@@ -89,6 +120,11 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
         transform.position = lastValidPosition;
     }
 
+    public void SetInTargetTray(bool isInTargetTray)
+    {
+        IsInTargetTray = isInTargetTray;
+    }
+
     public List<Vector3Int> GetOccupiedCellsAt(Vector3Int anchorCell)
     {
         RefreshCells();
@@ -102,7 +138,7 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
         var currentAnchor = GridManager.Instance.WorldToCell(transform.position);
         for (int i = 0; i < cells.Count; i++)
         {
-            var offset = GridManager.Instance.WorldToCell(cells[i].position) - currentAnchor;
+            var offset = GetCellOffset(cells[i]);
             occupied.Add(anchorCell + offset);
         }
 
@@ -136,7 +172,7 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
 
         for (int i = 0; i < cells.Count; i++)
         {
-            var cell = GridManager.Instance.WorldToCell(cells[i].position);
+            var cell = GetCell(cells[i]);
             minCell.x = Mathf.Min(minCell.x, cell.x);
             minCell.y = Mathf.Min(minCell.y, cell.y);
             maxCell.x = Mathf.Max(maxCell.x, cell.x);
@@ -144,16 +180,93 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
         }
     }
 
-    private void RefreshCells()
+    public Vector3Int GetCell(Transform cell)
+    {
+        if (GridManager.Instance == null)
+        {
+            return Vector3Int.RoundToInt(cell.localPosition / 0.5f);
+        }
+
+        return GridManager.Instance.WorldToCell(transform.position) + GetCellOffset(cell);
+    }
+
+    public Vector3Int GetCellOffset(Transform cell)
+    {
+        if (GridManager.Instance == null)
+        {
+            return Vector3Int.RoundToInt(cell.localPosition / 0.5f);
+        }
+
+        var visual = GetOrAddCutVisual(cell);
+        if (!visual.HasCellOffset)
+        {
+            visual.CellOffset = GridManager.Instance.WorldToCell(cell.position) - GridManager.Instance.WorldToCell(transform.position);
+            visual.HasCellOffset = true;
+        }
+
+        return visual.CellOffset;
+    }
+
+    public bool IsStrawberryCell(Transform cell)
+    {
+        return cell != null
+            && (cell.CompareTag("Strawberry") || cell.name.IndexOf("Strawberry", System.StringComparison.OrdinalIgnoreCase) >= 0);
+    }
+
+    public void SetStrawberryMismatchMarkerVisible(Transform cell, bool visible)
+    {
+        var marker = FindChildByName(cell, "X");
+        if (marker != null)
+        {
+            marker.gameObject.SetActive(visible);
+        }
+    }
+
+    public void ClearStrawberryMismatchMarkers()
+    {
+        RefreshCells();
+        for (int i = 0; i < cells.Count; i++)
+        {
+            SetStrawberryMismatchMarkerVisible(cells[i], false);
+        }
+    }
+
+    private void RefreshCells(bool rebuildCellOffsets = false)
     {
         cells.Clear();
 
+        var uniqueCells = new Dictionary<Vector3Int, Transform>();
+        var anchorCell = GridManager.Instance != null ? GridManager.Instance.WorldToCell(transform.position) : Vector3Int.zero;
         foreach (Transform child in transform)
         {
             if (child.gameObject.activeSelf)
             {
-                cells.Add(child);
+                var visual = GetOrAddCutVisual(child);
+                if (rebuildCellOffsets || !visual.HasCellOffset)
+                {
+                    visual.CellOffset = GridManager.Instance != null
+                        ? GridManager.Instance.WorldToCell(child.position) - anchorCell
+                        : Vector3Int.RoundToInt(child.localPosition / 0.5f);
+                    visual.HasCellOffset = true;
+                }
+
+                if (uniqueCells.TryGetValue(visual.CellOffset, out var existingCell))
+                {
+                    if (IsStrawberryCell(child) && !IsStrawberryCell(existingCell))
+                    {
+                        uniqueCells[visual.CellOffset] = child;
+                    }
+
+                    continue;
+                }
+
+                uniqueCells.Add(visual.CellOffset, child);
             }
+        }
+
+        foreach (var cell in uniqueCells.Values)
+        {
+            cells.Add(cell);
         }
 
         if (cells.Count == 0)
@@ -165,9 +278,7 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
         var max = Vector2Int.one * int.MinValue;
         foreach (var cell in cells)
         {
-            var localCell = GridManager.Instance != null
-                ? GridManager.Instance.WorldToCell(cell.position) - GridManager.Instance.WorldToCell(transform.position)
-                : Vector3Int.RoundToInt(cell.localPosition / 0.5f);
+            var localCell = GetCellOffset(cell);
 
             min.x = Mathf.Min(min.x, localCell.x);
             min.y = Mathf.Min(min.y, localCell.y);
@@ -176,6 +287,40 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
         }
 
         sizeInCells = new Vector2Int(max.x - min.x + 1, max.y - min.y + 1);
+    }
+
+    private static ChocolateCellCutVisual GetOrAddCutVisual(Transform cell)
+    {
+        if (!cell.TryGetComponent(out ChocolateCellCutVisual visual))
+        {
+            visual = cell.gameObject.AddComponent<ChocolateCellCutVisual>();
+        }
+
+        return visual;
+    }
+
+    private static Transform FindChildByName(Transform root, string childName)
+    {
+        if (root == null)
+        {
+            return null;
+        }
+
+        foreach (Transform child in root)
+        {
+            if (child.name.Equals(childName, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return child;
+            }
+
+            var result = FindChildByName(child, childName);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
+        return null;
     }
 
     private void EnsureCollider()

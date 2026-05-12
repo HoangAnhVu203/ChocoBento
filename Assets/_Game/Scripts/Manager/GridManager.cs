@@ -53,19 +53,29 @@ public sealed class GridManager : MonoBehaviour
 
     public Vector3 SnapWorldToVerticalCutLine(Vector3 worldPosition)
     {
-        var cell = WorldToCell(worldPosition);
-        var leftCenter = CellToWorldCenter(cell);
-        var rightCenter = CellToWorldCenter(cell + Vector3Int.right);
-        var x = (leftCenter.x + rightCenter.x) * 0.5f;
-        return new Vector3(x, SnapWorldToCell(worldPosition).y, worldPosition.z);
+        var cellSize = CellSize;
+        var cellCenterOrigin = CellToWorldCenter(Vector3Int.zero);
+        var gridOrigin = cellCenterOrigin - new Vector3(cellSize * 0.5f, cellSize * 0.5f, 0f);
+
+        var lineIndex = Mathf.RoundToInt((worldPosition.x - gridOrigin.x) / cellSize);
+        var rowIndex = Mathf.RoundToInt((worldPosition.y - cellCenterOrigin.y) / cellSize);
+
+        var x = gridOrigin.x + lineIndex * cellSize;
+        var y = cellCenterOrigin.y + rowIndex * cellSize;
+        return new Vector3(x, y, worldPosition.z);
     }
 
     public Vector3 SnapWorldToHorizontalCutLine(Vector3 worldPosition)
     {
-        var cell = WorldToCell(worldPosition);
-        var bottomCenter = CellToWorldCenter(cell);
-        var topCenter = CellToWorldCenter(cell + Vector3Int.up);
-        var y = (bottomCenter.y + topCenter.y) * 0.5f;
-        return new Vector3(SnapWorldToCell(worldPosition).x, y, worldPosition.z);
+        var cellSize = CellSize;
+        var cellCenterOrigin = CellToWorldCenter(Vector3Int.zero);
+        var gridOrigin = cellCenterOrigin - new Vector3(cellSize * 0.5f, cellSize * 0.5f, 0f);
+
+        var columnIndex = Mathf.RoundToInt((worldPosition.x - cellCenterOrigin.x) / cellSize);
+        var lineIndex = Mathf.RoundToInt((worldPosition.y - gridOrigin.y) / cellSize);
+
+        var x = cellCenterOrigin.x + columnIndex * cellSize;
+        var y = gridOrigin.y + lineIndex * cellSize;
+        return new Vector3(x, y, worldPosition.z);
     }
 }

@@ -328,12 +328,9 @@ Temp/obj/Unity.VisualScripting.DocCodeExamples/.NETStandard,Version=v2.1.Assembl
   Extensions/2.0.0/System.Runtime.InteropServices.WindowsRuntime.dll
   ref/2.1.0/netstandard.dll
 Temp/bin/Debug/
- Unity.InputSystem.dll
  Unity.VisualScripting.Core.dll
  Unity.VisualScripting.Flow.dll
- UnityEditor.TestRunner.dll
  UnityEditor.UI.dll
- UnityEngine.TestRunner.dll
  UnityEngine.UI.dll
 
 [analyzerReferences]

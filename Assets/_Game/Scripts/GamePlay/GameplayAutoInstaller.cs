@@ -17,6 +17,12 @@ public sealed class GameplayAutoInstaller : MonoBehaviour
             targetTray.AddComponent<TargetTray>();
         }
 
+        var panelGameplay = GameObject.Find("Panel - GamePlay");
+        if (panelGameplay != null && panelGameplay.GetComponent<PanelGameplay>() == null)
+        {
+            panelGameplay.AddComponent<PanelGameplay>();
+        }
+
         var knife = GameObject.Find("Knife");
         if (knife != null && knife.GetComponent<KnifeDrag>() == null)
         {

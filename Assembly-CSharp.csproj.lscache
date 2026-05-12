@@ -51,6 +51,7 @@ TemporaryDependencyNodeTargetIdentifier=netstandard2.1
 
 [sourceFiles]
 Assets/_Game/Scripts/GamePlay/
+ ChocolateCellCutVisual.cs
  ChocolatePiece.cs
  GameplayAutoInstaller.cs
  GameplayInputRouter.cs
@@ -61,6 +62,7 @@ Assets/_Game/Scripts/GamePlay/
 Assets/_Game/Scripts/
  Manager/GridManager.cs
  UI/
+  Panel/PanelGameplay.cs
   Singleton.cs
   UICanvas.cs
   UIManager.cs
@@ -394,7 +396,6 @@ Temp/bin/Debug/
  Unity.Rider.Editor.dll
  Unity.Searcher.Editor.dll
  Unity.ShaderGraph.Editor.dll
- Unity.ShaderGraph.Utilities.dll
  Unity.TextMeshPro.dll
  Unity.TextMeshPro.Editor.dll
  Unity.Timeline.dll
@@ -409,10 +410,8 @@ Temp/bin/Debug/
  Unity.VisualScripting.State.dll
  Unity.VisualScripting.State.Editor.dll
  Unity.VisualStudio.Editor.dll
- UnityEditor.TestRunner.dll
  UnityEditor.UI.Analytics.dll
  UnityEditor.UI.dll
- UnityEngine.TestRunner.dll
  UnityEngine.UI.dll
 
 [analyzerReferences]

@@ -9,6 +9,9 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
     private readonly List<Transform> cells = new();
     private Vector3 dragOffset;
     private Vector3 lastValidPosition;
+    private ChocolateDragLiftVisual dragLiftVisual;
+    private ChocolatePlacementPreview placementPreview;
+    private ParticleSystem[] dropParticles;
 
     public Vector2Int SizeInCells => sizeInCells;
     public IReadOnlyList<Transform> Cells => cells;
@@ -25,7 +28,20 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
 
     private void Awake()
     {
+        dragLiftVisual = GetComponent<ChocolateDragLiftVisual>();
+        if (dragLiftVisual == null)
+        {
+            dragLiftVisual = gameObject.AddComponent<ChocolateDragLiftVisual>();
+        }
+
+        placementPreview = GetComponent<ChocolatePlacementPreview>();
+        if (placementPreview == null)
+        {
+            placementPreview = gameObject.AddComponent<ChocolatePlacementPreview>();
+        }
+
         RefreshCells(true);
+        RefreshDropParticles();
         EnsureCollider();
         lastValidPosition = transform.position;
     }
@@ -48,21 +64,27 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
         GameplayLevelController.Instance?.SetSelectedPiece(this);
         SetInTargetTray(false);
         ClearStrawberryMismatchMarkers();
+        dragLiftVisual?.Lift();
+        placementPreview?.Show(this);
         dragOffset = transform.position - pointerWorldPosition;
     }
 
     public void Drag(Vector3 pointerWorldPosition)
     {
         transform.position = pointerWorldPosition + dragOffset;
+        placementPreview?.UpdatePreview();
     }
 
     public void EndDrag(Vector3 pointerWorldPosition)
     {
         if (!snapToGridOnRelease || GridManager.Instance == null)
         {
+            placementPreview?.Hide();
+            dragLiftVisual?.Drop();
             return;
         }
 
+        placementPreview?.Hide();
         var previousValidPosition = lastValidPosition;
         transform.position = GridManager.Instance.SnapWorldToCell(transform.position);
         GameplayLevelController.Instance?.ResolvePieceOverlap(this);
@@ -85,6 +107,8 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
         }
 
         SetInTargetTray(acceptedByTray);
+        dragLiftVisual?.Drop();
+        PlayDropParticles();
         GameplayLevelController.Instance?.LogTargetTrayProgress();
     }
 
@@ -239,7 +263,7 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
         var anchorCell = GridManager.Instance != null ? GridManager.Instance.WorldToCell(transform.position) : Vector3Int.zero;
         foreach (Transform child in transform)
         {
-            if (child.gameObject.activeSelf)
+            if (child.gameObject.activeSelf && child.GetComponent<ParticleSystem>() == null)
             {
                 var visual = GetOrAddCutVisual(child);
                 if (rebuildCellOffsets || !visual.HasCellOffset)
@@ -334,6 +358,35 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
         var bounds = GetLocalBounds();
         collider.offset = bounds.center;
         collider.size = bounds.size;
+    }
+
+    private void RefreshDropParticles()
+    {
+        dropParticles = GetComponentsInChildren<ParticleSystem>(true);
+    }
+
+    private void PlayDropParticles()
+    {
+        if (dropParticles == null || dropParticles.Length == 0)
+        {
+            RefreshDropParticles();
+        }
+
+        if (dropParticles == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < dropParticles.Length; i++)
+        {
+            if (dropParticles[i] == null)
+            {
+                continue;
+            }
+
+            dropParticles[i].Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            dropParticles[i].Play(true);
+        }
     }
 
     private Bounds GetLocalBounds()

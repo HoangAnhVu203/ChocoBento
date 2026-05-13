@@ -184,6 +184,22 @@ public sealed class GameplayLevelController : MonoBehaviour
         movingPiece.transform.position = GridManager.Instance.CellToWorldCenter(resolvedAnchor);
     }
 
+    public bool IsPlacementFree(ChocolatePiece movingPiece, Vector3Int candidateAnchor)
+    {
+        if (movingPiece == null)
+        {
+            return false;
+        }
+
+        pieces.RemoveAll(piece => piece == null);
+        if (!pieces.Contains(movingPiece))
+        {
+            pieces.Add(movingPiece);
+        }
+
+        return !WouldOverlap(movingPiece, candidateAnchor);
+    }
+
     public void LogTargetTrayProgress()
     {
         pieces.RemoveAll(piece => piece == null);

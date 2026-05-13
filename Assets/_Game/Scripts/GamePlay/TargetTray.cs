@@ -80,6 +80,41 @@ public sealed class TargetTray : MonoBehaviour
         return true;
     }
 
+    public bool TryGetPreviewPlacement(
+        ChocolatePiece piece,
+        Vector3Int desiredAnchor,
+        out Vector3Int previewAnchor,
+        out bool isValid)
+    {
+        previewAnchor = desiredAnchor;
+        isValid = false;
+
+        if (piece == null || GridManager.Instance == null)
+        {
+            return false;
+        }
+
+        CacheSlots();
+        if (fillableSlotCells.Count == 0)
+        {
+            return false;
+        }
+
+        if (TryFindBestPlacementAnchor(piece, desiredAnchor, out previewAnchor))
+        {
+            isValid = true;
+            return true;
+        }
+
+        if (!IsNearTrayArea(piece, desiredAnchor))
+        {
+            return false;
+        }
+
+        previewAnchor = desiredAnchor;
+        return true;
+    }
+
     public void RefreshMismatchMarkers(IEnumerable<ChocolatePiece> pieces)
     {
         CacheSlots();

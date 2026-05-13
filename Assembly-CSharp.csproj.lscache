@@ -52,7 +52,9 @@ TemporaryDependencyNodeTargetIdentifier=netstandard2.1
 [sourceFiles]
 Assets/_Game/Scripts/GamePlay/
  ChocolateCellCutVisual.cs
+ ChocolateDragLiftVisual.cs
  ChocolatePiece.cs
+ ChocolatePlacementPreview.cs
  GameplayAutoInstaller.cs
  GameplayInputRouter.cs
  GameplayLevelController.cs

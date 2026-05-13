@@ -31,7 +31,7 @@ public sealed class GameplayAutoInstaller : MonoBehaviour
 
         foreach (var piece in FindObjectsByType<Transform>(FindObjectsSortMode.None))
         {
-            if (piece.name.StartsWith("ChocolatePiece") && piece.GetComponent<ChocolatePiece>() == null)
+            if (IsChocolatePieceRoot(piece.name) && piece.GetComponent<ChocolatePiece>() == null)
             {
                 piece.gameObject.AddComponent<ChocolatePiece>();
             }
@@ -46,5 +46,12 @@ public sealed class GameplayAutoInstaller : MonoBehaviour
         {
             new GameObject("Gameplay Level Controller").AddComponent<GameplayLevelController>();
         }
+    }
+
+    private static bool IsChocolatePieceRoot(string objectName)
+    {
+        return objectName == "ChocolatePiece"
+            || objectName.StartsWith("ChocolatePiece_")
+            || objectName.StartsWith("ChocolatePiece (");
     }
 }

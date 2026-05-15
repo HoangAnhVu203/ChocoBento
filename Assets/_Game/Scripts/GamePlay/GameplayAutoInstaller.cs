@@ -46,6 +46,16 @@ public sealed class GameplayAutoInstaller : MonoBehaviour
         {
             new GameObject("Gameplay Level Controller").AddComponent<GameplayLevelController>();
         }
+
+        if (FindFirstObjectByType<LevelManager>() == null)
+        {
+            new GameObject("Level Manager").AddComponent<LevelManager>();
+        }
+
+        if (FindFirstObjectByType<GameManager>() == null)
+        {
+            new GameObject("Game Manager").AddComponent<GameManager>();
+        }
     }
 
     private static bool IsChocolatePieceRoot(string objectName)

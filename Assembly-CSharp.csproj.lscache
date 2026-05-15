@@ -61,13 +61,23 @@ Assets/_Game/Scripts/GamePlay/
  IDraggableGameplay.cs
  KnifeDrag.cs
  TargetTray.cs
-Assets/_Game/Scripts/
- Manager/GridManager.cs
- UI/
-  Panel/PanelGameplay.cs
-  Singleton.cs
-  UICanvas.cs
-  UIManager.cs
+Assets/_Game/Scripts/Manager/
+ GameManager.cs
+ GridManager.cs
+ LevelManager.cs
+Assets/_Game/Scripts/UI/Panel/
+ PanelGameplay.cs
+ PanelHome.cs
+ PanelLoading.cs
+ PanelLose.cs
+ PanelWin.cs
+Assets/_Game/Scripts/UI/
+ Singleton.cs
+ UICanvas.cs
+ UIManager.cs
+Assets/_Game/Scripts/Utilities/
+ RandomObjectSpawner.cs
+ Rotator.cs
 Temp/obj/Assembly-CSharp/.NETStandard,Version=v2.1.AssemblyAttributes.cs
 
 [metadataReferences]

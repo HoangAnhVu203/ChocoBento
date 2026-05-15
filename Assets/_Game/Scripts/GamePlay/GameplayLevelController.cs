@@ -20,15 +20,19 @@ public sealed class GameplayLevelController : MonoBehaviour
 
     private void Start()
     {
+        RefreshLevelObjects();
+        SetCanCut(false);
+    }
+
+    public void RefreshLevelObjects()
+    {
         pieces.Clear();
         pieces.AddRange(FindObjectsByType<ChocolatePiece>(FindObjectsSortMode.None));
+        cutMarksByPiece.Clear();
+        selectedKnife = null;
+        selectedPiece = null;
 
-        if (gameplayPanel == null)
-        {
-            gameplayPanel = FindFirstObjectByType<PanelGameplay>();
-        }
-
-        SetCanCut(false);
+        gameplayPanel = PanelGameplay.Instance != null ? PanelGameplay.Instance : FindFirstObjectByType<PanelGameplay>();
     }
 
     public void SetSelectedKnife(KnifeDrag knife)
@@ -215,6 +219,7 @@ public sealed class GameplayLevelController : MonoBehaviour
             if (slotCount > 0 && filledSlots == slotCount)
             {
                 Debug.Log("[TargetTray] All tray slots are filled.");
+                GameManager.Instance.WinLevel();
             }
         }
 
@@ -232,6 +237,7 @@ public sealed class GameplayLevelController : MonoBehaviour
         if (pieces.Count > 0 && placedCount == pieces.Count)
         {
             Debug.Log("[TargetTray] All choco pieces are in the tray.");
+            GameManager.Instance.WinLevel();
         }
     }
 
@@ -314,7 +320,7 @@ public sealed class GameplayLevelController : MonoBehaviour
         return false;
     }
 
-    public void CutSelectedPiece()
+    public int CutSelectedPiece()
     {
         var knives = FindObjectsByType<KnifeDrag>(FindObjectsSortMode.None);
         var appliedCutCount = 0;
@@ -357,10 +363,11 @@ public sealed class GameplayLevelController : MonoBehaviour
         if (appliedCutCount == 0)
         {
             SetCanCut(false);
-            return;
+            return 0;
         }
 
         SetCanCut(HasAnyValidKnife());
+        return appliedCutCount;
     }
 
     private bool HasAnyValidKnife()
@@ -440,10 +447,11 @@ public sealed class GameplayLevelController : MonoBehaviour
         }
 
         var newPieces = new List<ChocolatePiece>();
+        var pieceParent = source.transform.parent;
         for (int i = 0; i < components.Count; i++)
         {
             GetComponentCellBounds(source, components[i], out var componentMinCell, out var componentMaxCell);
-            var root = CreatePieceRoot($"{source.name}_Part{i + 1}", GridManager.Instance.CellToWorldCenter(componentMinCell));
+            var root = CreatePieceRoot($"{source.name}_Part{i + 1}", GridManager.Instance.CellToWorldCenter(componentMinCell), pieceParent);
             for (int cellIndex = 0; cellIndex < components[i].Count; cellIndex++)
             {
                 var child = components[i][cellIndex];
@@ -754,9 +762,10 @@ public sealed class GameplayLevelController : MonoBehaviour
         return visual;
     }
 
-    private GameObject CreatePieceRoot(string name, Vector3 position)
+    private GameObject CreatePieceRoot(string name, Vector3 position, Transform parent)
     {
         var root = new GameObject(name);
+        root.transform.SetParent(parent, true);
         root.transform.position = GridManager.Instance != null ? GridManager.Instance.SnapWorldToCell(position) : position;
         return root;
     }

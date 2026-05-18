@@ -13,6 +13,8 @@ public enum GameState
 public sealed class GameManager : MonoBehaviour
 {
     private static GameManager instance;
+    public bool BootTutorialActive { get; private set; }
+    private const string PREF_BOOT_TUTORIAL_DONE = "BOOT_TUTORIAL_DONE";
 
     public static GameManager Instance
     {
@@ -138,7 +140,7 @@ public sealed class GameManager : MonoBehaviour
                 UIManager.Instance.OpenUI<PanelLoading>();
                 break;
             case GameState.Home:
-                UIManager.Instance.OpenUI<PanelHome>();
+                OpenHomePanels();
                 break;
             case GameState.GamePlay:
                 UIManager.Instance.OpenUI<PanelGameplay>();
@@ -149,6 +151,60 @@ public sealed class GameManager : MonoBehaviour
             case GameState.Lose:
                 UIManager.Instance.OpenUI<PanelLose>();
                 break;
+        }
+    }
+
+    private void OpenHomePanels()
+    {
+        var leaderboard = UIManager.Instance.GetUI<PanelLeaderBoard>();
+        var home = UIManager.Instance.GetUI<PanelHome>();
+        var shop = UIManager.Instance.GetUI<PanelShop>();
+        var footer = UIManager.Instance.GetUI<FooterTabBar>();
+
+        leaderboard.transform.SetSiblingIndex(0);
+        home.transform.SetSiblingIndex(1);
+        shop.transform.SetSiblingIndex(2);
+        footer.transform.SetSiblingIndex(3);
+
+        leaderboard.gameObject.SetActive(false);
+        home.Open();
+        shop.gameObject.SetActive(false);
+        footer.Open();
+
+        var tabTransition = footer.GetComponent<TabTransitionController>();
+        if (tabTransition == null)
+        {
+            tabTransition = footer.gameObject.AddComponent<TabTransitionController>();
+        }
+
+        if (tabTransition != null)
+        {
+            footer.SetTransitionController(tabTransition);
+            tabTransition.ConfigurePanels(leaderboard, home, shop);
+            tabTransition.ShowHomeImmediate();
+            footer.SelectHome(false);
+        }
+    }
+
+    public bool IsBootTutorialDone()
+    {
+        return PlayerPrefs.GetInt(PREF_BOOT_TUTORIAL_DONE, 0) == 1;
+    }
+
+    public void SetBootTutorial(bool on)
+    {
+        BootTutorialActive = on;
+
+        if (on)
+        {
+            // Trong tutorial: không cho PanelGamePlay bật lên
+            UIManager.Instance.CloseUIDirectly<PanelHome>();
+            UIManager.Instance.CloseUIDirectly<FooterTabBar>();
+            UIManager.Instance.CloseUIDirectly<PanelShop>();
+            UIManager.Instance.CloseUIDirectly<PanelLeaderBoard>();
+            UIManager.Instance.CloseUIDirectly<PanelWin>();
+            UIManager.Instance.CloseUIDirectly<PanelFail>();
+            UIManager.Instance.CloseUIDirectly<PanelGameplay>();
         }
     }
 }

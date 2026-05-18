@@ -9,6 +9,8 @@ public sealed class GameplayLevelController : MonoBehaviour
     [SerializeField] private KnifeDrag selectedKnife;
     [SerializeField] private ChocolatePiece selectedPiece;
     [SerializeField, Range(0.7f, 1f)] private float cutEdgeCellScale = 0.84f;
+    [SerializeField] private ParticleSystem cutChocoParticlePrefab;
+    [SerializeField, Min(0.1f)] private float cutChocoParticleCleanupDelay = 2f;
 
     private readonly List<ChocolatePiece> pieces = new();
     private readonly Dictionary<ChocolatePiece, List<CutMark>> cutMarksByPiece = new();
@@ -141,7 +143,7 @@ public sealed class GameplayLevelController : MonoBehaviour
             var bottomCellCenterY = GridManager.Instance.CellToWorldCenter(minCell).y;
             var centerIndex = Mathf.RoundToInt((knifePosition.y - bottomCellCenterY) / cellSize);
             CalculateSegmentIntersection(centerIndex, bladeLengthInCells, height, out segmentStart, out segmentLength);
-            return segmentLength > 0;
+            return segmentLength > 0 && SegmentHasUncutUnit(piece, direction, lineIndex, segmentStart, segmentLength);
         }
 
         var pieceWidth = maxCell.x - minCell.x + 1;
@@ -157,7 +159,7 @@ public sealed class GameplayLevelController : MonoBehaviour
         var leftCenterX = GridManager.Instance.CellToWorldCenter(minCell).x;
         var horizontalCenterIndex = Mathf.RoundToInt((knifePosition.x - leftCenterX) / cellSize);
         CalculateSegmentIntersection(horizontalCenterIndex, bladeLengthInCells, pieceWidth, out segmentStart, out segmentLength);
-        return segmentLength > 0;
+        return segmentLength > 0 && SegmentHasUncutUnit(piece, direction, lineIndex, segmentStart, segmentLength);
     }
 
     private static void CalculateSegmentIntersection(int centerIndex, int bladeLengthInCells, int availableLength, out int segmentStart, out int segmentLength)
@@ -347,16 +349,14 @@ public sealed class GameplayLevelController : MonoBehaviour
                     continue;
                 }
 
-                if (knives[i].CutDirection == KnifeCutDirection.Vertical)
-                {
-                    RegisterVerticalCut(target.Piece, target.LineIndex, target.SegmentStart, target.SegmentLength);
-                }
-                else
-                {
-                    RegisterHorizontalCut(target.Piece, target.LineIndex, target.SegmentStart, target.SegmentLength);
-                }
+                var cutApplied = knives[i].CutDirection == KnifeCutDirection.Vertical
+                    ? RegisterVerticalCut(target.Piece, target.LineIndex, target.SegmentStart, target.SegmentLength)
+                    : RegisterHorizontalCut(target.Piece, target.LineIndex, target.SegmentStart, target.SegmentLength);
 
-                appliedCutCount++;
+                if (cutApplied)
+                {
+                    appliedCutCount++;
+                }
             }
         }
 
@@ -375,7 +375,7 @@ public sealed class GameplayLevelController : MonoBehaviour
         var knives = FindObjectsByType<KnifeDrag>(FindObjectsSortMode.None);
         for (int i = 0; i < knives.Length; i++)
         {
-            if (knives[i] != null && knives[i].HasValidCut)
+            if (knives[i] != null && knives[i].RefreshCutData(false))
             {
                 return true;
             }
@@ -384,32 +384,46 @@ public sealed class GameplayLevelController : MonoBehaviour
         return false;
     }
 
-    private void RegisterVerticalCut(ChocolatePiece piece, int cutIndex, int segmentStart, int segmentLength)
+    private bool RegisterVerticalCut(ChocolatePiece piece, int cutIndex, int segmentStart, int segmentLength)
     {
         piece.GetOccupiedCellBounds(out var minCell, out var maxCell);
         var width = maxCell.x - minCell.x + 1;
         if (cutIndex <= 0 || cutIndex >= width)
         {
-            return;
+            return false;
+        }
+
+        if (!SegmentHasUncutUnit(piece, KnifeCutDirection.Vertical, cutIndex, segmentStart, segmentLength))
+        {
+            return false;
         }
 
         AddCutMark(piece, new CutMark(KnifeCutDirection.Vertical, cutIndex, segmentStart, segmentLength));
         ApplyPartialCutInset(piece, KnifeCutDirection.Vertical, minCell, maxCell, cutIndex, segmentStart, segmentLength);
+        PlayCutChocoParticle(piece, KnifeCutDirection.Vertical, minCell, cutIndex, segmentStart, segmentLength);
         SplitDisconnectedComponents(piece);
+        return true;
     }
 
-    private void RegisterHorizontalCut(ChocolatePiece piece, int cutIndex, int segmentStart, int segmentLength)
+    private bool RegisterHorizontalCut(ChocolatePiece piece, int cutIndex, int segmentStart, int segmentLength)
     {
         piece.GetOccupiedCellBounds(out var minCell, out var maxCell);
         var height = maxCell.y - minCell.y + 1;
         if (cutIndex <= 0 || cutIndex >= height)
         {
-            return;
+            return false;
+        }
+
+        if (!SegmentHasUncutUnit(piece, KnifeCutDirection.Horizontal, cutIndex, segmentStart, segmentLength))
+        {
+            return false;
         }
 
         AddCutMark(piece, new CutMark(KnifeCutDirection.Horizontal, cutIndex, segmentStart, segmentLength));
         ApplyPartialCutInset(piece, KnifeCutDirection.Horizontal, minCell, maxCell, cutIndex, segmentStart, segmentLength);
+        PlayCutChocoParticle(piece, KnifeCutDirection.Horizontal, minCell, cutIndex, segmentStart, segmentLength);
         SplitDisconnectedComponents(piece);
+        return true;
     }
 
     private void AddCutMark(ChocolatePiece piece, CutMark mark)
@@ -421,6 +435,120 @@ public sealed class GameplayLevelController : MonoBehaviour
         }
 
         marks.Add(mark);
+    }
+
+    private bool SegmentHasUncutUnit(ChocolatePiece piece, KnifeCutDirection direction, int lineIndex, int segmentStart, int segmentLength)
+    {
+        if (segmentLength <= 0)
+        {
+            return false;
+        }
+
+        for (int i = segmentStart; i < segmentStart + segmentLength; i++)
+        {
+            if (!IsCutUnitMarked(piece, direction, lineIndex, i))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsCutUnitMarked(ChocolatePiece piece, KnifeCutDirection direction, int lineIndex, int unitIndex)
+    {
+        if (!cutMarksByPiece.TryGetValue(piece, out var marks))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < marks.Count; i++)
+        {
+            var mark = marks[i];
+            if (mark.Direction == direction
+                && mark.LineIndex == lineIndex
+                && unitIndex >= mark.StartIndex
+                && unitIndex < mark.StartIndex + mark.Length)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void PlayCutChocoParticle(
+        ChocolatePiece piece,
+        KnifeCutDirection direction,
+        Vector3Int minCell,
+        int lineIndex,
+        int segmentStart,
+        int segmentLength)
+    {
+        if (cutChocoParticlePrefab == null || GridManager.Instance == null || piece == null || segmentLength <= 0)
+        {
+            return;
+        }
+
+        var position = GetCutSegmentCenter(direction, minCell, lineIndex, segmentStart, segmentLength);
+        var particle = Instantiate(cutChocoParticlePrefab, position, cutChocoParticlePrefab.transform.rotation);
+        particle.transform.SetParent(transform, true);
+        BringCutParticleToFront(particle);
+
+        particle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        particle.Play(true);
+        Destroy(particle.gameObject, GetParticleCleanupDelay(particle));
+    }
+
+    private static Vector3 GetCutSegmentCenter(
+        KnifeCutDirection direction,
+        Vector3Int minCell,
+        int lineIndex,
+        int segmentStart,
+        int segmentLength)
+    {
+        var cellSize = GridManager.Instance.CellSize;
+        var minCenter = GridManager.Instance.CellToWorldCenter(minCell);
+
+        if (direction == KnifeCutDirection.Vertical)
+        {
+            return new Vector3(
+                minCenter.x + (lineIndex - 0.5f) * cellSize,
+                minCenter.y + (segmentStart + segmentLength * 0.5f - 0.5f) * cellSize,
+                0f);
+        }
+
+        return new Vector3(
+            minCenter.x + (segmentStart + segmentLength * 0.5f - 0.5f) * cellSize,
+            minCenter.y + (lineIndex - 0.5f) * cellSize,
+            0f);
+    }
+
+    private static void BringCutParticleToFront(ParticleSystem particle)
+    {
+        var renderers = particle.GetComponentsInChildren<ParticleSystemRenderer>(true);
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            renderers[i].sortingOrder = Mathf.Max(renderers[i].sortingOrder, 10);
+        }
+    }
+
+    private float GetParticleCleanupDelay(ParticleSystem particle)
+    {
+        if (particle == null)
+        {
+            return cutChocoParticleCleanupDelay;
+        }
+
+        var cleanupDelay = cutChocoParticleCleanupDelay;
+        var particles = particle.GetComponentsInChildren<ParticleSystem>(true);
+        for (int i = 0; i < particles.Length; i++)
+        {
+            var main = particles[i].main;
+            cleanupDelay = Mathf.Max(cleanupDelay, main.duration + main.startLifetime.constantMax);
+        }
+
+        return cleanupDelay;
     }
 
     private void SplitDisconnectedComponents(ChocolatePiece source)

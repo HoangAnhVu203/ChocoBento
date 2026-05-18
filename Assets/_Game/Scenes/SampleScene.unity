@@ -167,6 +167,7 @@ GameObject:
   - component: {fileID: 435778507}
   - component: {fileID: 435778506}
   - component: {fileID: 435778505}
+  - component: {fileID: 435778510}
   m_Layer: 5
   m_Name: Canvas - Main
   m_TagString: Untagged
@@ -269,6 +270,27 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &435778510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435778504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5961d500254604beab423bcc1e468b5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TabTransitionController
+  panelContainer: {fileID: 435778509}
+  leaderboardPanelGO: {fileID: 8305984855483077779, guid: dda84d5ed1a654650beb429981525bf0, type: 3}
+  homePanelGO: {fileID: 411501335676810330, guid: 9e89d895bc08c42f9bcd3390ecd346ec, type: 3}
+  shopPanelGO: {fileID: 127432168744271808, guid: 98ee27907f5474cfbafeb0a537195ea3, type: 3}
+  leaderboardSlider: {fileID: 5410533040494574578, guid: dda84d5ed1a654650beb429981525bf0, type: 3}
+  homeSlider: {fileID: 2255513900167919940, guid: 9e89d895bc08c42f9bcd3390ecd346ec, type: 3}
+  shopSlider: {fileID: 3415196230382831278, guid: 98ee27907f5474cfbafeb0a537195ea3, type: 3}
+  startTab: 1
+  panelStepScale: 0.82
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -6221,6 +6243,8 @@ MonoBehaviour:
   selectedKnife: {fileID: 0}
   selectedPiece: {fileID: 0}
   cutEdgeCellScale: 0.95
+  cutChocoParticlePrefab: {fileID: 5312084055568114321, guid: 380bf97718c504f9e835494a3625ec06, type: 3}
+  cutChocoParticleCleanupDelay: 2
 --- !u!114 &1957340255
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -65,19 +65,28 @@ Assets/_Game/Scripts/Manager/
  GameManager.cs
  GridManager.cs
  LevelManager.cs
-Assets/_Game/Scripts/UI/Panel/
- PanelGameplay.cs
- PanelHome.cs
- PanelLoading.cs
- PanelLose.cs
- PanelWin.cs
 Assets/_Game/Scripts/UI/
+ FooterTabBar.cs
+ HomeLevelItemUI.cs
+ Panel/
+  PanelFail.cs
+  PanelGameplay.cs
+  PanelHome.cs
+  PanelLeaderBoard.cs
+  PanelLoading.cs
+  PanelLose.cs
+  PanelShop.cs
+  PanelWin.cs
  Singleton.cs
+ TabTransitionController.cs
  UICanvas.cs
  UIManager.cs
+ UIPanelSlider.cs
+ _Panel/PanelSetting.cs
 Assets/_Game/Scripts/Utilities/
  RandomObjectSpawner.cs
  Rotator.cs
+ ToggleSetting.cs
 Temp/obj/Assembly-CSharp/.NETStandard,Version=v2.1.AssemblyAttributes.cs
 
 [metadataReferences]
@@ -408,7 +417,6 @@ Temp/bin/Debug/
  Unity.Rider.Editor.dll
  Unity.Searcher.Editor.dll
  Unity.ShaderGraph.Editor.dll
- Unity.ShaderGraph.Utilities.dll
  Unity.TextMeshPro.dll
  Unity.TextMeshPro.Editor.dll
  Unity.Timeline.dll
@@ -423,10 +431,8 @@ Temp/bin/Debug/
  Unity.VisualScripting.State.dll
  Unity.VisualScripting.State.Editor.dll
  Unity.VisualStudio.Editor.dll
- UnityEditor.TestRunner.dll
  UnityEditor.UI.Analytics.dll
  UnityEditor.UI.dll
- UnityEngine.TestRunner.dll
  UnityEngine.UI.dll
 
 [analyzerReferences]

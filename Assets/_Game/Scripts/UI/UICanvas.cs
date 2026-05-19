@@ -7,6 +7,7 @@ public class UICanvas : Singleton<UICanvas>
 {
     [SerializeField] bool isDestroyOnClose = false;
 
+    public bool IsDestroyOnClose => isDestroyOnClose;
 
     //xu ly canvas dien thoai tai tho
     private void Awake()

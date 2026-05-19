@@ -23,6 +23,7 @@ public class PanelGameplay : UICanvas
     [SerializeField] private Image[] starImages;
     [SerializeField] private Sprite starAvailableSprite;
     [SerializeField] private Sprite starUsedSprite;
+    [SerializeField] private RandomObjectSpawner[] randomObjectSpawners;
 
     private int remainingKnifeCount;
     private int remainingStarCount;
@@ -39,6 +40,7 @@ public class PanelGameplay : UICanvas
         ResetTemporaryRule();
         RefreshLevelText();
         SetCanCut(false);
+        ResolveRandomObjectSpawners();
     }
 
     private void OnDisable()
@@ -357,4 +359,18 @@ public class PanelGameplay : UICanvas
 
         return images.ToArray();
     }
+
+    private void ResolveRandomObjectSpawners()
+    {
+        if (randomObjectSpawners != null && randomObjectSpawners.Length > 0)
+        {
+            return;
+        }
+
+        randomObjectSpawners = GetComponentsInChildren<RandomObjectSpawner>(true);
+    }
+
+    //Call Panel
+    public void OpenSetting() => UIManager.Instance.OpenUI<PanelSetting>();
+    public void ReplayLevelBtn() => GameManager.Instance.ReplayLevel();
 }

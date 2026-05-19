@@ -4,29 +4,10 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public sealed class LevelManager : MonoBehaviour
+public sealed class LevelManager : Singleton<LevelManager>
 {
     private const string CurrentLevelKey = "ChocoBento.CurrentLevelIndex";
-
-    private static LevelManager instance;
-
-    public static LevelManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindFirstObjectByType<LevelManager>();
-                if (instance == null)
-                {
-                    instance = new GameObject("Level Manager").AddComponent<LevelManager>();
-                }
-            }
-
-            return instance;
-        }
-        private set => instance = value;
-    }
+    private const string LevelStarKeyPrefix = "ChocoBento.LevelStars.";
 
     [SerializeField] private Transform levelParent;
     [SerializeField] private LevelConfig[] levels;
@@ -35,16 +16,10 @@ public sealed class LevelManager : MonoBehaviour
 
     public int CurrentLevelIndex { get; private set; }
     public int CurrentCutCount => GetLevel(CurrentLevelIndex).CutCount;
+    public int LevelCount => levels != null ? levels.Length : 0;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
         TryAutoFillLevelsInEditor();
         CurrentLevelIndex = Mathf.Clamp(PlayerPrefs.GetInt(CurrentLevelKey, 0), 0, Mathf.Max(0, LevelCount - 1));
     }
@@ -63,13 +38,59 @@ public sealed class LevelManager : MonoBehaviour
 
     public void CompleteCurrentLevel()
     {
+        CompleteCurrentLevel(0);
+    }
+
+    public void CompleteCurrentLevel(int earnedStars)
+    {
         if (LevelCount == 0)
         {
             return;
         }
 
+        SaveBestStars(CurrentLevelIndex, earnedStars);
         var nextIndex = (CurrentLevelIndex + 1) % LevelCount;
         SetCurrentLevelIndex(nextIndex);
+    }
+
+    public void SelectLevel(int levelIndex)
+    {
+        SetCurrentLevelIndex(levelIndex);
+    }
+
+    public void PlayLevel(int levelIndex)
+    {
+        SelectLevel(levelIndex);
+        GameManager.Instance.PlayCurrentLevel();
+    }
+
+    public int GetBestStars(int levelIndex)
+    {
+        if (LevelCount == 0)
+        {
+            return 0;
+        }
+
+        levelIndex = Mathf.Clamp(levelIndex, 0, LevelCount - 1);
+        return Mathf.Clamp(PlayerPrefs.GetInt(GetLevelStarKey(levelIndex), 0), 0, 3);
+    }
+
+    public void SaveBestStars(int levelIndex, int stars)
+    {
+        if (LevelCount == 0)
+        {
+            return;
+        }
+
+        levelIndex = Mathf.Clamp(levelIndex, 0, LevelCount - 1);
+        stars = Mathf.Clamp(stars, 0, 3);
+        if (stars <= GetBestStars(levelIndex))
+        {
+            return;
+        }
+
+        PlayerPrefs.SetInt(GetLevelStarKey(levelIndex), stars);
+        PlayerPrefs.Save();
     }
 
     public void ClearCurrentLevel()
@@ -81,6 +102,11 @@ public sealed class LevelManager : MonoBehaviour
 
         Destroy(currentLevelInstance);
         currentLevelInstance = null;
+    }
+
+    public void GoHome()
+    {
+        GameManager.Instance.GoHome();
     }
 
     public void SetLevels(LevelConfig[] newLevels)
@@ -199,7 +225,10 @@ public sealed class LevelManager : MonoBehaviour
 #endif
     }
 
-    private int LevelCount => levels != null ? levels.Length : 0;
+    private static string GetLevelStarKey(int levelIndex)
+    {
+        return $"{LevelStarKeyPrefix}{levelIndex}";
+    }
 }
 
 [Serializable]

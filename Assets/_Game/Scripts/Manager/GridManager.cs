@@ -1,10 +1,8 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public sealed class GridManager : MonoBehaviour
+public sealed class GridManager : Singleton<GridManager>
 {
-    public static GridManager Instance { get; private set; }
-
     [SerializeField] private Grid grid;
     [SerializeField] private Tilemap backgroundTilemap;
 
@@ -13,8 +11,6 @@ public sealed class GridManager : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
-
         if (grid == null)
         {
             grid = GetComponent<Grid>();

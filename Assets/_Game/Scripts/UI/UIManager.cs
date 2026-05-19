@@ -44,7 +44,16 @@ public class UIManager : Singleton<UIManager>
     {
         if (IsUILoaded<T>())
         {
-            canvasActives[typeof(T)].CloseDirectly();
+            var type = typeof(T);
+            var canvas = canvasActives[type];
+            var shouldRemove = canvas != null && canvas.IsDestroyOnClose;
+
+            canvas.CloseDirectly();
+
+            if (shouldRemove)
+            {
+                canvasActives.Remove(type);
+            }
         }
         return null;
     }
@@ -89,6 +98,30 @@ public class UIManager : Singleton<UIManager>
             if (canvas != null && canvas.gameObject.activeSelf)
             {
                 canvas.Close(0);
+            }
+        }
+    }
+
+    public void CloseAllDirectly()
+    {
+        var canvasTypes = new List<System.Type>(canvasActives.Keys);
+        for (int i = 0; i < canvasTypes.Count; i++)
+        {
+            var type = canvasTypes[i];
+            if (!canvasActives.TryGetValue(type, out var canvas))
+            {
+                continue;
+            }
+
+            if (canvas != null && canvas.gameObject.activeSelf)
+            {
+                var shouldRemove = canvas.IsDestroyOnClose;
+                canvas.CloseDirectly();
+
+                if (shouldRemove)
+                {
+                    canvasActives.Remove(type);
+                }
             }
         }
     }

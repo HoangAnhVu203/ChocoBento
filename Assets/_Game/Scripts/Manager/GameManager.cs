@@ -10,48 +10,21 @@ public enum GameState
     Lose
 }
 
-public sealed class GameManager : MonoBehaviour
+public sealed class GameManager : Singleton<GameManager>
 {
-    private static GameManager instance;
     public bool BootTutorialActive { get; private set; }
     private const string PREF_BOOT_TUTORIAL_DONE = "BOOT_TUTORIAL_DONE";
 
-    public static GameManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindFirstObjectByType<GameManager>();
-                if (instance == null)
-                {
-                    instance = new GameObject("Game Manager").AddComponent<GameManager>();
-                }
-            }
-
-            return instance;
-        }
-        private set => instance = value;
-    }
-
     [SerializeField, Min(0f)] private float firstLoadingDuration = 3f;
+    [SerializeField] private ParticleSystem[] winParticles;
+    [SerializeField, Min(0f)] private float winPanelDelay = 1f;
 
     private Coroutine loadingCoroutine;
+    private Coroutine winCoroutine;
     private bool hasStateChanged;
 
     public GameState State { get; private set; }
     public int LastWinStarCount { get; private set; } = 3;
-
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-    }
 
     private void Start()
     {
@@ -63,6 +36,7 @@ public sealed class GameManager : MonoBehaviour
 
     public void PlayInitialFlow()
     {
+        StopWinSequence();
         ChangeState(GameState.Loading);
         if (loadingCoroutine != null)
         {
@@ -74,6 +48,7 @@ public sealed class GameManager : MonoBehaviour
 
     public void PlayCurrentLevel()
     {
+        StopWinSequence();
         ChangeState(GameState.GamePlay);
         LevelManager.Instance.LoadCurrentLevel(true);
         var panel = UIManager.Instance.OpenUI<PanelGameplay>();
@@ -87,6 +62,13 @@ public sealed class GameManager : MonoBehaviour
 
     public void GoHome()
     {
+        StopWinSequence();
+        if (loadingCoroutine != null)
+        {
+            StopCoroutine(loadingCoroutine);
+            loadingCoroutine = null;
+        }
+
         LevelManager.Instance.ClearCurrentLevel();
         ChangeState(GameState.Home);
     }
@@ -99,8 +81,10 @@ public sealed class GameManager : MonoBehaviour
         }
 
         LastWinStarCount = PanelGameplay.Instance != null ? PanelGameplay.Instance.RemainingStarCount : 3;
-        LevelManager.Instance.CompleteCurrentLevel();
-        ChangeState(GameState.Win);
+        State = GameState.Win;
+        UIManager.Instance.CloseUIDirectly<PanelGameplay>();
+
+        winCoroutine = StartCoroutine(ShowWinAfterParticles());
     }
 
     public void LoseLevel()
@@ -115,6 +99,7 @@ public sealed class GameManager : MonoBehaviour
 
     public void PlayNextLevel()
     {
+        StopWinSequence();
         ChangeState(GameState.GamePlay);
         LevelManager.Instance.LoadCurrentLevel(true);
         var panel = UIManager.Instance.OpenUI<PanelGameplay>();
@@ -128,11 +113,26 @@ public sealed class GameManager : MonoBehaviour
         ChangeState(GameState.Home);
     }
 
+    private IEnumerator ShowWinAfterParticles()
+    {
+        PlayWinParticles();
+
+        if (winPanelDelay > 0f)
+        {
+            yield return new WaitForSecondsRealtime(winPanelDelay);
+        }
+
+        LevelManager.Instance.CompleteCurrentLevel(LastWinStarCount);
+        LevelManager.Instance.ClearCurrentLevel();
+        winCoroutine = null;
+        ChangeState(GameState.Win);
+    }
+
     private void ChangeState(GameState nextState)
     {
         hasStateChanged = true;
         State = nextState;
-        UIManager.Instance.CloseAll();
+        UIManager.Instance.CloseAllDirectly();
 
         switch (State)
         {
@@ -152,6 +152,53 @@ public sealed class GameManager : MonoBehaviour
                 UIManager.Instance.OpenUI<PanelLose>();
                 break;
         }
+    }
+
+    private void PlayWinParticles()
+    {
+        ResolveWinParticles();
+        for (int i = 0; i < winParticles.Length; i++)
+        {
+            if (winParticles[i] == null)
+            {
+                continue;
+            }
+
+            winParticles[i].gameObject.SetActive(true);
+            winParticles[i].Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            winParticles[i].Play(true);
+        }
+    }
+
+    private void ResolveWinParticles()
+    {
+        if (winParticles != null && winParticles.Length > 0)
+        {
+            return;
+        }
+
+        var sceneParticles = FindObjectsByType<ParticleSystem>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        var particles = new System.Collections.Generic.List<ParticleSystem>();
+        for (int i = 0; i < sceneParticles.Length && particles.Count < 2; i++)
+        {
+            if (sceneParticles[i] != null && sceneParticles[i].gameObject.scene.IsValid())
+            {
+                particles.Add(sceneParticles[i]);
+            }
+        }
+
+        winParticles = particles.ToArray();
+    }
+
+    private void StopWinSequence()
+    {
+        if (winCoroutine == null)
+        {
+            return;
+        }
+
+        StopCoroutine(winCoroutine);
+        winCoroutine = null;
     }
 
     private void OpenHomePanels()

@@ -7,15 +7,24 @@ public class ToggleSetting : MonoBehaviour
 {
     public SettingType settingType;
 
+    [Header("UI")]
     public Toggle toggle;
     public RectTransform checkmark;
-    public Image background;
 
+    [Header("Images")]
+    public Image backgroundImage;
+    public Image checkmarkImage;
+
+    [Header("Sprites")]
+    public Sprite backgroundOnSprite;
+    public Sprite backgroundOffSprite;
+
+    public Sprite checkmarkOnSprite;
+    public Sprite checkmarkOffSprite;
+
+    [Header("Position")]
     public Vector2 leftPos = new Vector2(-30, 0);
     public Vector2 rightPos = new Vector2(200, 0);
-
-    public Color onColor = Color.green;
-    public Color offColor = Color.gray;
 
     void Start()
     {
@@ -23,7 +32,9 @@ public class ToggleSetting : MonoBehaviour
 
         // Load trạng thái từ PlayerPrefs
         bool isOn = LoadState();
-        toggle.isOn = isOn;
+
+        // Không trigger event khi set giá trị ban đầu
+        toggle.SetIsOnWithoutNotify(isOn);
 
         ApplyVisual(isOn);
     }
@@ -32,10 +43,16 @@ public class ToggleSetting : MonoBehaviour
     {
         switch (settingType)
         {
-            case SettingType.Sound: return PlayerPrefs.GetInt("SOUND_ON", 1) == 1;
-            case SettingType.Music: return PlayerPrefs.GetInt("MUSIC_ON", 1) == 1;
-            case SettingType.Vibration: return PlayerPrefs.GetInt("VIBRATION_ON", 1) == 1;
+            case SettingType.Sound:
+                return PlayerPrefs.GetInt("SOUND_ON", 1) == 1;
+
+            case SettingType.Music:
+                return PlayerPrefs.GetInt("MUSIC_ON", 1) == 1;
+
+            case SettingType.Vibration:
+                return PlayerPrefs.GetInt("VIBRATION_ON", 1) == 1;
         }
+
         return true;
     }
 
@@ -49,14 +66,18 @@ public class ToggleSetting : MonoBehaviour
 
             case SettingType.Music:
                 PlayerPrefs.SetInt("MUSIC_ON", isOn ? 1 : 0);
+
+                // Ví dụ:
                 // if (AudioManager.Instance.musicSource)
                 //     AudioManager.Instance.musicSource.mute = !isOn;
+
                 break;
 
             case SettingType.Vibration:
                 PlayerPrefs.SetInt("VIBRATION_ON", isOn ? 1 : 0);
                 break;
         }
+
         PlayerPrefs.Save();
     }
 
@@ -68,7 +89,23 @@ public class ToggleSetting : MonoBehaviour
 
     void ApplyVisual(bool isOn)
     {
+        // Move checkmark
         checkmark.anchoredPosition = isOn ? rightPos : leftPos;
-        background.color = isOn ? onColor : offColor;
+
+        // Change background sprite
+        if (backgroundImage != null)
+        {
+            backgroundImage.sprite = isOn
+                ? backgroundOnSprite
+                : backgroundOffSprite;
+        }
+
+        // Change checkmark sprite
+        if (checkmarkImage != null)
+        {
+            checkmarkImage.sprite = isOn
+                ? checkmarkOnSprite
+                : checkmarkOffSprite;
+        }
     }
 }

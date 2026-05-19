@@ -5,10 +5,12 @@ public class PanelLose : UICanvas
 {
     [SerializeField] private Button replayButton;
     [SerializeField] private Button homeButton;
+    [SerializeField] private Text coinText;
 
     private void OnEnable()
     {
         ResolveButtons();
+        BindCoinText();
         if (replayButton != null)
         {
             replayButton.onClick.RemoveListener(HandleReplayClicked);
@@ -33,6 +35,8 @@ public class PanelLose : UICanvas
         {
             homeButton.onClick.RemoveListener(HandleHomeClicked);
         }
+
+        CoinManager.Instance.CoinChanged -= RefreshCoinText;
     }
 
     private void HandleReplayClicked()
@@ -42,7 +46,7 @@ public class PanelLose : UICanvas
 
     private void HandleHomeClicked()
     {
-        GameManager.Instance.GoHome();
+        LevelManager.Instance.GoHome();
     }
 
     private void ResolveButtons()
@@ -75,5 +79,30 @@ public class PanelLose : UICanvas
         {
             homeButton = buttons[1];
         }
+    }
+
+    private void BindCoinText()
+    {
+        CoinManager.Instance.CoinChanged -= RefreshCoinText;
+        CoinManager.Instance.CoinChanged += RefreshCoinText;
+        RefreshCoinText(CoinManager.Instance.CoinCount);
+    }
+
+    public void RefreshCoinText()
+    {
+        RefreshCoinText(CoinManager.Instance.CoinCount);
+    }
+
+    private void RefreshCoinText(int coinCount)
+    {
+        if (coinText != null)
+        {
+            coinText.text = coinCount.ToString();
+        }
+    }
+
+    public void GohomeBtn()
+    {
+        LevelManager.Instance.GoHome();
     }
 }

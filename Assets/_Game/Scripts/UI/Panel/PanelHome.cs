@@ -7,19 +7,24 @@ public class PanelHome : UICanvas
 {
     [SerializeField] private Button playButton;
     [SerializeField] private Text coinText;
+
+    [Header("Level Scroll")]
     [SerializeField] private ScrollRect levelScrollView;
     [SerializeField] private Transform levelItemContent;
     [SerializeField] private HomeLevelItemUI levelItemPrefab;
-    [SerializeField, Range(0f, 1f)] private float currentLevelViewportY = 0.32f;
 
     private readonly List<HomeLevelItemUI> spawnedLevelItems = new();
-    private Coroutine alignCurrentLevelCoroutine;
+    private Coroutine scrollToCurrentLevelCoroutine;
 
     private void OnEnable()
     {
         ResolveButton();
+        ResolveLevelListReferences();
+
+        SetupHorizontalScroll();
         PopulateLevelItems();
         BindCoinText();
+
         if (playButton != null)
         {
             playButton.onClick.RemoveListener(HandlePlayClicked);
@@ -34,8 +39,12 @@ public class PanelHome : UICanvas
             playButton.onClick.RemoveListener(HandlePlayClicked);
         }
 
-        CoinManager.Instance.CoinChanged -= RefreshCoinText;
-        StopAlignCurrentLevelCoroutine();
+        if (CoinManager.Instance != null)
+        {
+            CoinManager.Instance.CoinChanged -= RefreshCoinText;
+        }
+
+        StopScrollToCurrentLevelCoroutine();
         ClearSpawnedLevelItems();
     }
 
@@ -56,7 +65,8 @@ public class PanelHome : UICanvas
             return;
         }
 
-        var buttons = GetComponentsInChildren<Button>(true);
+        Button[] buttons = GetComponentsInChildren<Button>(true);
+
         for (int i = 0; i < buttons.Length; i++)
         {
             if (buttons[i].name.IndexOf("Play", System.StringComparison.OrdinalIgnoreCase) >= 0)
@@ -78,14 +88,23 @@ public class PanelHome : UICanvas
 
     private void BindCoinText()
     {
+        if (CoinManager.Instance == null)
+        {
+            return;
+        }
+
         CoinManager.Instance.CoinChanged -= RefreshCoinText;
         CoinManager.Instance.CoinChanged += RefreshCoinText;
+
         RefreshCoinText(CoinManager.Instance.CoinCount);
     }
 
     public void RefreshCoinText()
     {
-        RefreshCoinText(CoinManager.Instance.CoinCount);
+        if (CoinManager.Instance != null)
+        {
+            RefreshCoinText(CoinManager.Instance.CoinCount);
+        }
     }
 
     private void RefreshCoinText(int coinCount)
@@ -96,8 +115,10 @@ public class PanelHome : UICanvas
         }
     }
 
-    //Call Panel
-    public void OpenSetting() => UIManager.Instance.OpenUI<PanelSetting>();
+    public void OpenSetting()
+    {
+        UIManager.Instance.OpenUI<PanelSetting>();
+    }
 
     public void RefreshLevelItems()
     {
@@ -107,6 +128,7 @@ public class PanelHome : UICanvas
     private void PopulateLevelItems()
     {
         ResolveLevelListReferences();
+        SetupHorizontalScroll();
         ClearSpawnedLevelItems();
 
         if (levelItemContent == null || levelItemPrefab == null || LevelManager.Instance == null)
@@ -116,76 +138,129 @@ public class PanelHome : UICanvas
 
         levelItemPrefab.gameObject.SetActive(false);
 
-        var levelCount = LevelManager.Instance.LevelCount;
-        var currentLevelIndex = LevelManager.Instance.CurrentLevelIndex;
-        RectTransform currentLevelItem = null;
-        for (int i = levelCount - 1; i >= 0; i--)
+        int levelCount = LevelManager.Instance.LevelCount;
+        int currentLevelIndex = LevelManager.Instance.CurrentLevelIndex;
+
+        // Level đi từ trái sang phải: 0, 1, 2, 3...
+        for (int i = 0; i < levelCount; i++)
         {
-            var item = Instantiate(levelItemPrefab, levelItemContent);
+            HomeLevelItemUI item = Instantiate(levelItemPrefab, levelItemContent);
             item.gameObject.SetActive(true);
-            item.Setup(i, currentLevelIndex, LevelManager.Instance.GetBestStars(i), HandleLevelItemClicked);
+
+            item.Setup(
+                i,
+                currentLevelIndex,
+                LevelManager.Instance.GetBestStars(i),
+                HandleLevelItemClicked
+            );
+
             spawnedLevelItems.Add(item);
-
-            if (i == currentLevelIndex)
-            {
-                currentLevelItem = item.transform as RectTransform;
-            }
         }
 
-        AlignCurrentLevelToViewport(currentLevelItem);
+        StartScrollToCurrentLevel(currentLevelIndex);
     }
 
-    private void AlignCurrentLevelToViewport(RectTransform currentLevelItem)
+    private void SetupHorizontalScroll()
     {
-        StopAlignCurrentLevelCoroutine();
-        if (currentLevelItem == null || levelScrollView == null)
+        if (levelScrollView == null)
         {
             return;
         }
 
-        alignCurrentLevelCoroutine = StartCoroutine(AlignCurrentLevelRoutine(currentLevelItem));
-    }
-
-    private IEnumerator AlignCurrentLevelRoutine(RectTransform currentLevelItem)
-    {
-        yield return null;
-        yield return null;
-
-        if (currentLevelItem == null || levelScrollView == null || levelScrollView.content == null)
-        {
-            yield break;
-        }
-
-        var viewport = levelScrollView.viewport != null ? levelScrollView.viewport : levelScrollView.transform as RectTransform;
-        var content = levelScrollView.content;
-        if (viewport == null || content == null)
-        {
-            yield break;
-        }
-
-        Canvas.ForceUpdateCanvases();
-
-        var viewportRect = viewport.rect;
-        var viewportBottom = -viewportRect.height * viewport.pivot.y;
-        var desiredY = viewportBottom + viewportRect.height * currentLevelViewportY;
-        var itemCenterY = viewport.InverseTransformPoint(currentLevelItem.TransformPoint(currentLevelItem.rect.center)).y;
-        var anchoredPosition = content.anchoredPosition;
-        anchoredPosition.y += desiredY - itemCenterY;
-        content.anchoredPosition = anchoredPosition;
+        levelScrollView.horizontal = true;
+        levelScrollView.vertical = false;
         levelScrollView.velocity = Vector2.zero;
-        Canvas.ForceUpdateCanvases();
-        alignCurrentLevelCoroutine = null;
+        levelScrollView.verticalNormalizedPosition = 1f;
     }
 
-    private void StopAlignCurrentLevelCoroutine()
+    private void StartScrollToCurrentLevel(int currentLevelIndex)
     {
-        if (alignCurrentLevelCoroutine == null)
+        StopScrollToCurrentLevelCoroutine();
+        scrollToCurrentLevelCoroutine = StartCoroutine(ScrollToCurrentLevelRoutine(currentLevelIndex));
+    }
+
+    private IEnumerator ScrollToCurrentLevelRoutine(int currentLevelIndex)
+    {
+        yield return null;
+        yield return null;
+
+        ScrollToCurrentLevel(currentLevelIndex);
+        scrollToCurrentLevelCoroutine = null;
+    }
+
+    private void ScrollToCurrentLevel(int currentLevelIndex)
+    {
+        if (levelScrollView == null ||
+            levelScrollView.content == null ||
+            spawnedLevelItems.Count == 0)
         {
             return;
         }
 
-        StopCoroutine(alignCurrentLevelCoroutine);
-        alignCurrentLevelCoroutine = null;
+        if (currentLevelIndex < 0 || currentLevelIndex >= spawnedLevelItems.Count)
+        {
+            return;
+        }
+
+        RectTransform content = levelScrollView.content;
+        RectTransform viewport = levelScrollView.viewport;
+
+        if (viewport == null)
+        {
+            viewport = levelScrollView.transform as RectTransform;
+        }
+
+        if (viewport == null)
+        {
+            return;
+        }
+
+        Canvas.ForceUpdateCanvases();
+
+        RectTransform target = spawnedLevelItems[currentLevelIndex].transform as RectTransform;
+
+        if (target == null)
+        {
+            return;
+        }
+
+        Vector3 targetWorldCenter = target.TransformPoint(target.rect.center);
+        Vector3 viewportLocalCenter = viewport.InverseTransformPoint(targetWorldCenter);
+
+        float viewportCenterX = viewport.rect.width * (0.5f - viewport.pivot.x);
+        float offsetX = viewportLocalCenter.x - viewportCenterX;
+
+        Vector2 anchoredPosition = content.anchoredPosition;
+        anchoredPosition.x -= offsetX;
+
+        float contentWidth = content.rect.width;
+        float viewportWidth = viewport.rect.width;
+
+        float minX = Mathf.Min(0f, viewportWidth - contentWidth);
+        float maxX = 0f;
+
+        anchoredPosition.x = Mathf.Clamp(anchoredPosition.x, minX, maxX);
+
+        // Không tác động trục Y
+        anchoredPosition.y = content.anchoredPosition.y;
+
+        content.anchoredPosition = anchoredPosition;
+
+        levelScrollView.velocity = Vector2.zero;
+        levelScrollView.verticalNormalizedPosition = 1f;
+
+        Canvas.ForceUpdateCanvases();
+    }
+
+    private void StopScrollToCurrentLevelCoroutine()
+    {
+        if (scrollToCurrentLevelCoroutine == null)
+        {
+            return;
+        }
+
+        StopCoroutine(scrollToCurrentLevelCoroutine);
+        scrollToCurrentLevelCoroutine = null;
     }
 
     private void ClearSpawnedLevelItems()
@@ -216,7 +291,8 @@ public class PanelHome : UICanvas
 
         if (levelItemContent == null)
         {
-            var transforms = GetComponentsInChildren<Transform>(true);
+            Transform[] transforms = GetComponentsInChildren<Transform>(true);
+
             for (int i = 0; i < transforms.Length; i++)
             {
                 if (transforms[i].name.Equals("Content", System.StringComparison.OrdinalIgnoreCase))

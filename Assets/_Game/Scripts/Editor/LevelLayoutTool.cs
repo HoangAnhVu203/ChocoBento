@@ -9,6 +9,8 @@ public sealed class LevelLayoutTool : EditorWindow
     private const string DefaultChocolateCellPath = "Assets/_Game/Prefabs/ChocolateCell.prefab";
     private const string DefaultStrawberryCellPath = "Assets/_Game/Prefabs/ChocolateStrawberryCell.prefab";
     private const string DefaultTraySlotPath = "Assets/_Game/Prefabs/TraySlot.prefab";
+    private const string DefaultTrayStrawberryPath = "Assets/_Game/Prefabs/StrawberryHolder.prefab";
+    private const string DefaultRockPath = "Assets/_Game/Prefabs/Rock.prefab";
 
     [SerializeField] private Transform levelRoot;
     [SerializeField] private Transform chocolateParent;
@@ -119,6 +121,16 @@ public sealed class LevelLayoutTool : EditorWindow
         if (traySlotPrefab == null)
         {
             traySlotPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(DefaultTraySlotPath);
+        }
+
+        if (trayStrawberryPrefab == null)
+        {
+            trayStrawberryPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(DefaultTrayStrawberryPath);
+        }
+
+        if (rockPrefab == null)
+        {
+            rockPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(DefaultRockPath);
         }
     }
 
@@ -297,7 +309,7 @@ public sealed class LevelLayoutTool : EditorWindow
     {
         return token switch
         {
-            'S' or 's' => "Strawberry",
+            'S' or 's' => "StrawberryHolder",
             'R' or 'r' => "Rock",
             'O' or 'o' => "OverflowSlot",
             _ => "TraySlot"

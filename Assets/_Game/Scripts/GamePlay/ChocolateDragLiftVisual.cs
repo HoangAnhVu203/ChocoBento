@@ -8,14 +8,14 @@ public sealed class ChocolateDragLiftVisual : MonoBehaviour
     [SerializeField] private Vector3 liftedShadowOffset = new(-0.035f, -0.035f, 0f);
     [SerializeField] private int liftedSortingOrderBoost = 20;
     [SerializeField] private string strawberryJiggleNameContains = "StrawberryImage";
-    [SerializeField, Min(0f)] private float strawberryJiggleDistance = 0.18f;
-    [SerializeField, Min(0f)] private float strawberryJiggleVelocityStrength = 0.18f;
-    [SerializeField, Min(0f)] private float strawberryJiggleSpring = 52f;
-    [SerializeField, Min(0f)] private float strawberryJiggleDamping = 4.5f;
-    [SerializeField, Min(0f)] private float strawberryJiggleTilt = 52f;
-    [SerializeField, Min(0f)] private float strawberryJiggleSquash = 0.42f;
-    [SerializeField, Min(0f)] private float strawberryJiggleForceSpeed = 4f;
-    [SerializeField, Min(0.001f)] private float strawberryJiggleVelocitySmoothTime = 0.08f;
+    [SerializeField, Min(0f)] private float strawberryJiggleDistance = 0.09f;
+    [SerializeField, Min(0f)] private float strawberryJiggleVelocityStrength = 0.07f;
+    [SerializeField, Min(0f)] private float strawberryJiggleSpring = 36f;
+    [SerializeField, Min(0f)] private float strawberryJiggleDamping = 8f;
+    [SerializeField, Min(0f)] private float strawberryJiggleTilt = 24f;
+    [SerializeField, Min(0f)] private float strawberryJiggleSquash = 0.14f;
+    [SerializeField, Min(0f)] private float strawberryJiggleForceSpeed = 5.5f;
+    [SerializeField, Min(0.001f)] private float strawberryJiggleVelocitySmoothTime = 0.11f;
     [SerializeField, Min(0f)] private float strawberryJiggleSettleThreshold = 0.002f;
 
     private readonly List<SpriteRendererState> rendererStates = new();

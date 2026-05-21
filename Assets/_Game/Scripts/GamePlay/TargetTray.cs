@@ -15,6 +15,7 @@ public sealed class TargetTray : MonoBehaviour
     [SerializeField] private bool openRight;
     [SerializeField] private bool openTop;
     [SerializeField] private bool openBottom;
+    [SerializeField] private bool allowEmptyCellsInsideTrayBounds = true;
 
     private readonly List<Vector3Int> fillableSlotCells = new();
     private readonly HashSet<Vector3Int> allSlotCells = new();
@@ -276,6 +277,11 @@ public sealed class TargetTray : MonoBehaviour
                 continue;
             }
 
+            if (IsEmptyCellInsideTrayBounds(occupiedCells[i]))
+            {
+                continue;
+            }
+
             return false;
         }
 
@@ -474,6 +480,16 @@ public sealed class TargetTray : MonoBehaviour
         }
 
         return isOutside;
+    }
+
+    private bool IsEmptyCellInsideTrayBounds(Vector3Int cell)
+    {
+        return allowEmptyCellsInsideTrayBounds
+            && hasTrayBounds
+            && cell.x >= trayMinCell.x
+            && cell.x <= trayMaxCell.x
+            && cell.y >= trayMinCell.y
+            && cell.y <= trayMaxCell.y;
     }
 
     private void ClearStrawberryMismatchMarkers()

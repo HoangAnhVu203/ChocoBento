@@ -47,30 +47,34 @@ public sealed class GridManager : Singleton<GridManager>
         return CellToWorldCenter(WorldToCell(worldPosition));
     }
 
-    public Vector3 SnapWorldToVerticalCutLine(Vector3 worldPosition)
+    public Vector3 SnapWorldToVerticalCutLine(Vector3 worldPosition, int bladeLengthInCells = 1)
     {
         var cellSize = CellSize;
         var cellCenterOrigin = CellToWorldCenter(Vector3Int.zero);
         var gridOrigin = cellCenterOrigin - new Vector3(cellSize * 0.5f, cellSize * 0.5f, 0f);
 
         var lineIndex = Mathf.RoundToInt((worldPosition.x - gridOrigin.x) / cellSize);
-        var rowIndex = Mathf.RoundToInt((worldPosition.y - cellCenterOrigin.y) / cellSize);
+        var snapYToCellBoundary = bladeLengthInCells % 2 == 0;
 
         var x = gridOrigin.x + lineIndex * cellSize;
-        var y = cellCenterOrigin.y + rowIndex * cellSize;
+        var y = snapYToCellBoundary
+            ? gridOrigin.y + Mathf.RoundToInt((worldPosition.y - gridOrigin.y) / cellSize) * cellSize
+            : cellCenterOrigin.y + Mathf.RoundToInt((worldPosition.y - cellCenterOrigin.y) / cellSize) * cellSize;
         return new Vector3(x, y, worldPosition.z);
     }
 
-    public Vector3 SnapWorldToHorizontalCutLine(Vector3 worldPosition)
+    public Vector3 SnapWorldToHorizontalCutLine(Vector3 worldPosition, int bladeLengthInCells = 1)
     {
         var cellSize = CellSize;
         var cellCenterOrigin = CellToWorldCenter(Vector3Int.zero);
         var gridOrigin = cellCenterOrigin - new Vector3(cellSize * 0.5f, cellSize * 0.5f, 0f);
 
-        var columnIndex = Mathf.RoundToInt((worldPosition.x - cellCenterOrigin.x) / cellSize);
         var lineIndex = Mathf.RoundToInt((worldPosition.y - gridOrigin.y) / cellSize);
+        var snapXToCellBoundary = bladeLengthInCells % 2 == 0;
 
-        var x = cellCenterOrigin.x + columnIndex * cellSize;
+        var x = snapXToCellBoundary
+            ? gridOrigin.x + Mathf.RoundToInt((worldPosition.x - gridOrigin.x) / cellSize) * cellSize
+            : cellCenterOrigin.x + Mathf.RoundToInt((worldPosition.x - cellCenterOrigin.x) / cellSize) * cellSize;
         var y = gridOrigin.y + lineIndex * cellSize;
         return new Vector3(x, y, worldPosition.z);
     }

@@ -141,8 +141,18 @@ public sealed class GameplayLevelController : MonoBehaviour
             }
 
             var bottomCellCenterY = GridManager.Instance.CellToWorldCenter(minCell).y;
-            var centerIndex = Mathf.RoundToInt((knifePosition.y - bottomCellCenterY) / cellSize);
-            CalculateSegmentIntersection(centerIndex, bladeLengthInCells, height, out segmentStart, out segmentLength);
+            if (bladeLengthInCells % 2 == 0)
+            {
+                var verticalBottomBoundaryY = bottomCellCenterY - cellSize * 0.5f;
+                var centerBoundaryIndex = Mathf.RoundToInt((knifePosition.y - verticalBottomBoundaryY) / cellSize);
+                CalculateEvenSegmentIntersection(centerBoundaryIndex, bladeLengthInCells, height, out segmentStart, out segmentLength);
+            }
+            else
+            {
+                var centerIndex = Mathf.RoundToInt((knifePosition.y - bottomCellCenterY) / cellSize);
+                CalculateOddSegmentIntersection(centerIndex, bladeLengthInCells, height, out segmentStart, out segmentLength);
+            }
+
             return segmentLength > 0 && SegmentHasUncutUnit(piece, direction, lineIndex, segmentStart, segmentLength);
         }
 
@@ -157,15 +167,36 @@ public sealed class GameplayLevelController : MonoBehaviour
         }
 
         var leftCenterX = GridManager.Instance.CellToWorldCenter(minCell).x;
-        var horizontalCenterIndex = Mathf.RoundToInt((knifePosition.x - leftCenterX) / cellSize);
-        CalculateSegmentIntersection(horizontalCenterIndex, bladeLengthInCells, pieceWidth, out segmentStart, out segmentLength);
+        if (bladeLengthInCells % 2 == 0)
+        {
+            var leftBoundaryX = leftCenterX - cellSize * 0.5f;
+            var centerBoundaryIndex = Mathf.RoundToInt((knifePosition.x - leftBoundaryX) / cellSize);
+            CalculateEvenSegmentIntersection(centerBoundaryIndex, bladeLengthInCells, pieceWidth, out segmentStart, out segmentLength);
+        }
+        else
+        {
+            var horizontalCenterIndex = Mathf.RoundToInt((knifePosition.x - leftCenterX) / cellSize);
+            CalculateOddSegmentIntersection(horizontalCenterIndex, bladeLengthInCells, pieceWidth, out segmentStart, out segmentLength);
+        }
+
         return segmentLength > 0 && SegmentHasUncutUnit(piece, direction, lineIndex, segmentStart, segmentLength);
     }
 
-    private static void CalculateSegmentIntersection(int centerIndex, int bladeLengthInCells, int availableLength, out int segmentStart, out int segmentLength)
+    private static void CalculateOddSegmentIntersection(int centerIndex, int bladeLengthInCells, int availableLength, out int segmentStart, out int segmentLength)
     {
         var rawStart = centerIndex - bladeLengthInCells / 2;
         var rawEnd = rawStart + bladeLengthInCells;
+
+        segmentStart = Mathf.Clamp(rawStart, 0, availableLength);
+        var segmentEnd = Mathf.Clamp(rawEnd, 0, availableLength);
+        segmentLength = Mathf.Max(0, segmentEnd - segmentStart);
+    }
+
+    private static void CalculateEvenSegmentIntersection(int centerBoundaryIndex, int bladeLengthInCells, int availableLength, out int segmentStart, out int segmentLength)
+    {
+        var halfLength = bladeLengthInCells / 2;
+        var rawStart = centerBoundaryIndex - halfLength;
+        var rawEnd = centerBoundaryIndex + halfLength;
 
         segmentStart = Mathf.Clamp(rawStart, 0, availableLength);
         var segmentEnd = Mathf.Clamp(rawEnd, 0, availableLength);

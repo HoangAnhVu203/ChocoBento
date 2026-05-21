@@ -10,6 +10,7 @@ public sealed class KnifeDrag : MonoBehaviour, IDraggableGameplay
 {
     [SerializeField] private KnifeCutDirection cutDirection = KnifeCutDirection.Vertical;
     [SerializeField, Min(1)] private int bladeLengthInCells = 4;
+    [SerializeField] private bool snapToCutLineOnStart = true;
 
     private Vector3 dragOffset;
     private ChocolatePiece hoveredPiece;
@@ -28,6 +29,14 @@ public sealed class KnifeDrag : MonoBehaviour, IDraggableGameplay
     private void Awake()
     {
         GuessDirectionFromRotation();
+    }
+
+    private void Start()
+    {
+        if (snapToCutLineOnStart)
+        {
+            RefreshCutData(true);
+        }
     }
 
     public void BeginDrag(Vector3 pointerWorldPosition)
@@ -94,8 +103,8 @@ public sealed class KnifeDrag : MonoBehaviour, IDraggableGameplay
         if (snapPosition)
         {
             transform.position = cutDirection == KnifeCutDirection.Vertical
-                ? GridManager.Instance.SnapWorldToVerticalCutLine(transform.position)
-                : GridManager.Instance.SnapWorldToHorizontalCutLine(transform.position);
+                ? GridManager.Instance.SnapWorldToVerticalCutLine(transform.position, bladeLengthInCells)
+                : GridManager.Instance.SnapWorldToHorizontalCutLine(transform.position, bladeLengthInCells);
         }
 
         hoveredPiece = GameplayLevelController.Instance.FindPieceForKnife(cutDirection, transform.position, bladeLengthInCells);

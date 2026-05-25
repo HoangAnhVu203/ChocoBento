@@ -108,7 +108,13 @@ public sealed class GameManager : Singleton<GameManager>
 
     private IEnumerator ShowHomeAfterLoading()
     {
-        yield return new WaitForSeconds(firstLoadingDuration);
+        float loadingDuration = firstLoadingDuration;
+        if (UIManager.Instance.IsUILoaded<PanelLoading>())
+        {
+            loadingDuration = UIManager.Instance.GetUI<PanelLoading>().AnimationDuration;
+        }
+
+        yield return new WaitForSecondsRealtime(loadingDuration);
         loadingCoroutine = null;
         ChangeState(GameState.Home);
     }

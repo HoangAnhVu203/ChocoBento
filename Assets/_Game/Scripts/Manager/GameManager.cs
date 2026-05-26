@@ -14,8 +14,7 @@ public sealed class GameManager : Singleton<GameManager>
 {
     public bool BootTutorialActive { get; private set; }
     private const string PREF_BOOT_TUTORIAL_DONE = "BOOT_TUTORIAL_DONE";
-
-    [SerializeField, Min(0f)] private float firstLoadingDuration = 3f;
+    [SerializeField, Min(0f)] private float firstLoadingDuration = 4.5f;
     [SerializeField] private ParticleSystem[] winParticles;
     [SerializeField, Min(0f)] private float winPanelDelay = 1f;
 
@@ -111,10 +110,21 @@ public sealed class GameManager : Singleton<GameManager>
         float loadingDuration = firstLoadingDuration;
         if (UIManager.Instance.IsUILoaded<PanelLoading>())
         {
-            loadingDuration = UIManager.Instance.GetUI<PanelLoading>().AnimationDuration;
+            var panelLoading = UIManager.Instance.GetUI<PanelLoading>();
+            panelLoading.SetMinimumVisibleDuration(firstLoadingDuration);
+            loadingDuration = panelLoading.AnimationDuration;
+            yield return new WaitForSecondsRealtime(loadingDuration);
+
+            while (panelLoading != null && panelLoading.IsAnimating)
+            {
+                yield return null;
+            }
+        }
+        else
+        {
+            yield return new WaitForSecondsRealtime(loadingDuration);
         }
 
-        yield return new WaitForSecondsRealtime(loadingDuration);
         loadingCoroutine = null;
         ChangeState(GameState.Home);
     }

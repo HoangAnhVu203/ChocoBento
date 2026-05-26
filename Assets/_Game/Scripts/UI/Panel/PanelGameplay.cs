@@ -4,14 +4,18 @@ using UnityEngine.UI;
 public class PanelGameplay : UICanvas
 {
     public new static PanelGameplay Instance { get; private set; }
+    private const string FreeAddKnifeUsesKey = "ChocoBento.AddKnifeItemUses";
 
     [Header("Cut Rule Temp")]
-    [SerializeField, Range(0, 2)] private int startKnifeCount = 2;
+    [SerializeField, Range(0, 2)] private int startKnifeCount = 0;
     [SerializeField, Range(0, 3)] private int startStarCount = 3;
+    [SerializeField, Min(0)] private int initialFreeAddKnifeUses = 2;
 
     [SerializeField] private Button cutButton;
     [SerializeField] private Image cutButtonImage;
     [SerializeField] private Button addKnifeButton;
+    [SerializeField] private Text addKnifeAmountText;
+    [SerializeField] private Button hintButton;
     [SerializeField] private Text levelText;
     [SerializeField] private Sprite cutEnabledSprite;
     [SerializeField] private Sprite cutDisabledSprite;
@@ -27,6 +31,8 @@ public class PanelGameplay : UICanvas
 
     private int remainingKnifeCount;
     private int remainingStarCount;
+    private int freeAddKnifeUses;
+    private bool isBonusKnifeActive;
     private bool currentCanCut;
 
     public int RemainingStarCount => remainingStarCount;
@@ -36,10 +42,12 @@ public class PanelGameplay : UICanvas
         Instance = this;
         BindCutButton();
         BindAddKnifeButton();
+        BindHintButton();
         ResolveHudImages();
         ResetTemporaryRule();
         RefreshLevelText();
         SetCanCut(false);
+        RefreshHintButtonVisibility();
         ResolveRandomObjectSpawners();
     }
 
@@ -53,6 +61,11 @@ public class PanelGameplay : UICanvas
         if (addKnifeButton != null)
         {
             addKnifeButton.onClick.RemoveListener(HandleAddKnifeClicked);
+        }
+
+        if (hintButton != null)
+        {
+            hintButton.onClick.RemoveListener(HandleHintClicked);
         }
     }
 
@@ -81,8 +94,12 @@ public class PanelGameplay : UICanvas
         ResolveHudImages();
         remainingKnifeCount = Mathf.Clamp(startKnifeCount, 0, knifeImages.Length);
         remainingStarCount = Mathf.Clamp(startStarCount, 0, starImages.Length);
+        freeAddKnifeUses = LoadFreeAddKnifeUses();
+        isBonusKnifeActive = false;
         RefreshKnifeImages();
         RefreshStarImages();
+        RefreshAddKnifeAmount();
+        RefreshCutControlsVisibility();
     }
 
     public void SetTemporaryRule(int knifeCount, int starCount)
@@ -93,6 +110,8 @@ public class PanelGameplay : UICanvas
         ResetTemporaryRule();
         RefreshLevelText();
         SetCanCut(currentCanCut);
+        RefreshCutControlsVisibility();
+        RefreshHintButtonVisibility();
     }
 
     public void SetLevelText(int levelNumber)
@@ -128,6 +147,18 @@ public class PanelGameplay : UICanvas
         addKnifeButton.onClick.AddListener(HandleAddKnifeClicked);
     }
 
+    private void BindHintButton()
+    {
+        ResolveHintButton();
+        if (hintButton == null)
+        {
+            return;
+        }
+
+        hintButton.onClick.RemoveListener(HandleHintClicked);
+        hintButton.onClick.AddListener(HandleHintClicked);
+    }
+
     private void ResolveCutButton()
     {
         if (cutButton != null)
@@ -151,6 +182,48 @@ public class PanelGameplay : UICanvas
             if (buttons[i].name.Equals("AddKnifeBtn", System.StringComparison.OrdinalIgnoreCase))
             {
                 addKnifeButton = buttons[i];
+                return;
+            }
+        }
+    }
+
+    private void ResolveHintButton()
+    {
+        if (hintButton != null)
+        {
+            return;
+        }
+
+        var buttons = GetComponentsInChildren<Button>(true);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            if (buttons[i].name.Equals("HintBtn", System.StringComparison.OrdinalIgnoreCase))
+            {
+                hintButton = buttons[i];
+                return;
+            }
+        }
+    }
+
+    private void ResolveAddKnifeAmountText()
+    {
+        if (addKnifeAmountText != null)
+        {
+            return;
+        }
+
+        ResolveAddKnifeButton();
+        if (addKnifeButton == null)
+        {
+            return;
+        }
+
+        var texts = addKnifeButton.GetComponentsInChildren<Text>(true);
+        for (int i = 0; i < texts.Length; i++)
+        {
+            if (texts[i].name.Equals("Amount", System.StringComparison.OrdinalIgnoreCase))
+            {
+                addKnifeAmountText = texts[i];
                 return;
             }
         }
@@ -218,14 +291,45 @@ public class PanelGameplay : UICanvas
 
     private void HandleAddKnifeClicked()
     {
-        if (remainingKnifeCount >= startKnifeCount)
+        if (remainingKnifeCount > 0)
         {
             return;
         }
 
+        if (freeAddKnifeUses <= 0)
+        {
+            freeAddKnifeUses = 1;
+            SaveFreeAddKnifeUses();
+            RefreshAddKnifeAmount();
+            return;
+        }
+
+        freeAddKnifeUses--;
+        SaveFreeAddKnifeUses();
         remainingKnifeCount++;
+        isBonusKnifeActive = true;
         RefreshKnifeImages();
+        RefreshAddKnifeAmount();
         SetCanCut(currentCanCut);
+    }
+
+    private void HandleHintClicked()
+    {
+        GameplayHintController.GetOrCreate().ShowNextHint();
+    }
+
+    private void RefreshHintButtonVisibility()
+    {
+        ResolveHintButton();
+        if (hintButton == null)
+        {
+            return;
+        }
+
+        bool isFirstLevel = LevelManager.Instance != null && LevelManager.Instance.CurrentLevelIndex == 0;
+        var hintData = FindFirstObjectByType<LevelHintData>();
+        bool hasHintSteps = hintData != null && hintData.StepCount > 0;
+        hintButton.gameObject.SetActive(!isFirstLevel && hasHintSteps);
     }
 
     private void ConsumeTemporaryCutResource()
@@ -233,7 +337,13 @@ public class PanelGameplay : UICanvas
         if (remainingKnifeCount > 0)
         {
             remainingKnifeCount--;
+            if (isBonusKnifeActive && remainingKnifeCount <= 0)
+            {
+                isBonusKnifeActive = false;
+            }
+
             RefreshKnifeImages();
+            RefreshAddKnifeAmount();
             return;
         }
 
@@ -293,6 +403,58 @@ public class PanelGameplay : UICanvas
             var isAvailable = i < remainingKnifeCount;
             ApplyResourceImageState(knifeImages[i], isAvailable, knifeAvailableSprite, knifeUsedSprite);
         }
+    }
+
+    private void RefreshCutControlsVisibility()
+    {
+        bool hasCutTurns = startKnifeCount > 0;
+
+        ResolveCutButton();
+        ResolveAddKnifeButton();
+        ResolveImageRoot(ref knifeRoot, "KnifeRoot");
+
+        if (cutButton != null)
+        {
+            cutButton.gameObject.SetActive(hasCutTurns);
+        }
+
+        if (addKnifeButton != null)
+        {
+            addKnifeButton.gameObject.SetActive(hasCutTurns);
+        }
+
+        if (knifeRoot != null)
+        {
+            knifeRoot.gameObject.SetActive(hasCutTurns);
+        }
+    }
+
+    private void RefreshAddKnifeAmount()
+    {
+        ResolveAddKnifeAmountText();
+        if (addKnifeAmountText == null)
+        {
+            return;
+        }
+
+        addKnifeAmountText.text = freeAddKnifeUses > 0 ? freeAddKnifeUses.ToString() : "+";
+    }
+
+    private int LoadFreeAddKnifeUses()
+    {
+        if (!PlayerPrefs.HasKey(FreeAddKnifeUsesKey))
+        {
+            PlayerPrefs.SetInt(FreeAddKnifeUsesKey, Mathf.Max(0, initialFreeAddKnifeUses));
+            PlayerPrefs.Save();
+        }
+
+        return Mathf.Max(0, PlayerPrefs.GetInt(FreeAddKnifeUsesKey, initialFreeAddKnifeUses));
+    }
+
+    private void SaveFreeAddKnifeUses()
+    {
+        PlayerPrefs.SetInt(FreeAddKnifeUsesKey, freeAddKnifeUses);
+        PlayerPrefs.Save();
     }
 
     private void RefreshStarImages()
@@ -372,5 +534,8 @@ public class PanelGameplay : UICanvas
 
     //Call Panel
     public void OpenSetting() => UIManager.Instance.OpenUI<PanelSetting>();
-    public void ReplayLevelBtn() => GameManager.Instance.ReplayLevel();
+    public void ReplayLevelBtn() 
+    {
+        UIManager.Instance.OpenUI<PanelLoseHeart>();
+    }
 }

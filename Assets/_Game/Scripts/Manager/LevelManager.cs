@@ -95,6 +95,11 @@ public sealed class LevelManager : Singleton<LevelManager>
 
     public void ClearCurrentLevel()
     {
+        if (GameplayHintController.Instance != null)
+        {
+            GameplayHintController.Instance.ResetHint();
+        }
+
         if (currentLevelInstance == null)
         {
             return;
@@ -160,6 +165,15 @@ public sealed class LevelManager : Singleton<LevelManager>
 
     private static void RefreshRuntimeGameplayComponents()
     {
+        if (GameplayHintController.Instance != null)
+        {
+            GameplayHintController.Instance.ResetHint();
+        }
+        else if (FindFirstObjectByType<GameplayHintController>() == null)
+        {
+            new GameObject("Gameplay Hint Controller").AddComponent<GameplayHintController>();
+        }
+
         var targetTray = FindFirstObjectByType<TargetTray>();
         if (targetTray == null)
         {

@@ -202,6 +202,7 @@ Transform:
   - {fileID: 1639144769}
   - {fileID: 925518274}
   - {fileID: 165637548}
+  - {fileID: 2110148816}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &191423155
@@ -35292,7 +35293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e7b30a1cbb64f67a4d847f503ef5a6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  firstLoadingDuration: 5
+  firstLoadingDuration: 4.5
   winParticles:
   - {fileID: 453037271}
   - {fileID: 517257880}
@@ -45730,6 +45731,73 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08c7ec593af2e43b08b2b3237293b5cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameplayAutoInstaller
+--- !u!1 &2110148815
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2110148816}
+  - component: {fileID: 2110148818}
+  - component: {fileID: 2110148817}
+  m_Layer: 0
+  m_Name: HintManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2110148816
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2110148815}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 167570015}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2110148817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2110148815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eed7b55632904f3397096780e3c120d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShapeHintPreview
+  dashColor: {r: 0.05, g: 1, b: 0.18, a: 1}
+  fillColor: {r: 0.34, g: 0.86, b: 0.3, a: 0.65}
+  fillPadding: 0.04
+  dashLineWidth: 0.0525
+  dashLength: 0.16
+  dashGap: 0.1
+  dashSpeed: 0.35
+  fillSortingOrder: 1
+  dashSortingOrder: 10
+--- !u!114 &2110148818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2110148815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: accf9e7d36be4867b1b20396f4ccd3d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameplayHintController
+  preview: {fileID: 2110148817}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

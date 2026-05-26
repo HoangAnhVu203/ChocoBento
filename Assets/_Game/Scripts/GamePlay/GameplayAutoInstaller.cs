@@ -47,6 +47,11 @@ public sealed class GameplayAutoInstaller : MonoBehaviour
             new GameObject("Gameplay Level Controller").AddComponent<GameplayLevelController>();
         }
 
+        if (FindFirstObjectByType<GameplayHintController>() == null)
+        {
+            new GameObject("Gameplay Hint Controller").AddComponent<GameplayHintController>();
+        }
+
         if (FindFirstObjectByType<LevelManager>() == null)
         {
             new GameObject("Level Manager").AddComponent<LevelManager>();

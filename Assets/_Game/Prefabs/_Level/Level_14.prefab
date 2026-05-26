@@ -160,6 +160,7 @@ MonoBehaviour:
   openRight: 0
   openTop: 0
   openBottom: 0
+  allowEmptyCellsInsideTrayBounds: 1
 --- !u!1 &2675862793201153578
 GameObject:
   m_ObjectHideFlags: 0
@@ -266,6 +267,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3467591166508431167}
+  - component: {fileID: 4244955141096538183}
   m_Layer: 0
   m_Name: Level_14
   m_TagString: Untagged
@@ -292,6 +294,36 @@ Transform:
   - {fileID: 5119195157611419165}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4244955141096538183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6466449258668454134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 490d1e0b1a3a459ca70bd99ddfdc45b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelHintData
+  steps:
+  - targetSlots:
+    - {fileID: 1226807208895384823}
+    - {fileID: 8676353095712871389}
+    - {fileID: 2953338522794394381}
+    gridCells: []
+  - targetSlots:
+    - {fileID: 8453316313818233067}
+    - {fileID: 2069934601090398170}
+    - {fileID: 3765482956467266118}
+    gridCells: []
+  - targetSlots:
+    - {fileID: 1949680819545030066}
+    gridCells: []
+  - targetSlots:
+    - {fileID: 1949680819545030066}
+    - {fileID: 7451594479296434589}
+    gridCells: []
 --- !u!1 &7271314666295541234
 GameObject:
   m_ObjectHideFlags: 0

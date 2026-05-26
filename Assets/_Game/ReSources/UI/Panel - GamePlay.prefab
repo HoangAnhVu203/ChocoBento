@@ -1029,11 +1029,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PanelGameplay
   isDestroyOnClose: 1
-  startKnifeCount: 2
+  startKnifeCount: 0
   startStarCount: 3
+  initialFreeAddKnifeUses: 2
   cutButton: {fileID: 4454527978618986558}
   cutButtonImage: {fileID: 2713393392594714812}
   addKnifeButton: {fileID: 6457604491643083195}
+  addKnifeAmountText: {fileID: 8070968141634834139}
+  hintButton: {fileID: 3919901804974617909}
   levelText: {fileID: 4684065630980114827}
   cutEnabledSprite: {fileID: -2246937053463970610, guid: 95f44a1d6294c4c00a3175655fd0932f, type: 3}
   cutDisabledSprite: {fileID: 5126438196907765417, guid: bc4321beb4f394c918845b7733105a2f, type: 3}

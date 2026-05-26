@@ -10,5 +10,6 @@ public class PanelSetting : UICanvas
     public void GohomeBtn()
     {
         LevelManager.Instance.GoHome();
+        HeartManager.Instance.TrySpendHeart();
     }
 }

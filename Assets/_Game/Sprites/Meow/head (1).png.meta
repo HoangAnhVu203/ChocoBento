@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 31a45fb4b5b0746cda7b7130e1fa4bd7
+guid: 6f37bba1701d24dc3b08fc9f663f618d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1775669009216684005
-    second: Strawberry_0
+      213: 4156902208503911327
+    second: head (1)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -122,17 +122,30 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Strawberry_0
+      name: head (1)_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 786
-        height: 797
+        width: 519
+        height: 448
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5efb7055e8174a810800000000000000
-      internalID: 1775669009216684005
+      spriteID: f9399efc88840b930800000000000000
+      internalID: 4156902208503911327
       vertices: []
       indices: 
       edges: []
@@ -161,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Strawberry_0: 1775669009216684005
+      head (1)_0: 4156902208503911327
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

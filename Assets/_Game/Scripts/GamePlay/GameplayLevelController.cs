@@ -267,11 +267,6 @@ public sealed class GameplayLevelController : MonoBehaviour
 
         Debug.Log($"[TargetTray] Choco pieces placed: {placedCount}/{pieces.Count}");
 
-        if (pieces.Count > 0 && placedCount == pieces.Count)
-        {
-            Debug.Log("[TargetTray] All choco pieces are in the tray.");
-            GameManager.Instance.WinLevel();
-        }
     }
 
     private Vector3Int FindNearestFreeAnchor(ChocolatePiece movingPiece, Vector3Int desiredAnchor)

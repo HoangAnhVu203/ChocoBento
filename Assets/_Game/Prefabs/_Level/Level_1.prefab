@@ -137,6 +137,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1563102529303991766}
   - component: {fileID: 3449504616342755656}
+  - component: {fileID: 7162973481759832481}
   m_Layer: 0
   m_Name: TargetTray
   m_TagString: Untagged
@@ -187,6 +188,28 @@ MonoBehaviour:
   openTop: 0
   openBottom: 0
   allowEmptyCellsInsideTrayBounds: 1
+--- !u!114 &7162973481759832481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2105876324976434267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc3131cbf88941a28a72ce86e1f9f55a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TargetTrayHoldPreview
+  dashColor: {r: 0.05, g: 1, b: 0.18, a: 1}
+  fillColor: {r: 0.34, g: 0.86, b: 0.3, a: 0.65}
+  slotNameContains: TraySlot
+  fillPadding: 0.04
+  dashLineWidth: 0.0525
+  dashLength: 0.16
+  dashGap: 0.1
+  dashSpeed: 0.35
+  fillSortingOrder: 8
+  dashSortingOrder: 10
 --- !u!1 &3782837973247313983
 GameObject:
   m_ObjectHideFlags: 0
@@ -199,13 +222,14 @@ GameObject:
   - component: {fileID: 1899766247229710866}
   - component: {fileID: 6319894145143849753}
   - component: {fileID: 6010603214968683594}
+  - component: {fileID: 8284916673642109381}
   m_Layer: 0
   m_Name: HandTutorials
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8669903059797940563
 Transform:
   m_ObjectHideFlags: 0
@@ -215,7 +239,7 @@ Transform:
   m_GameObject: {fileID: 3782837973247313983}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.879, y: -1.175, z: 0}
+  m_LocalPosition: {x: -0.889, y: -1.165, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -275,7 +299,7 @@ MeshRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 5000
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &6010603214968683594
@@ -312,9 +336,33 @@ MonoBehaviour:
     materialsInsideMask: []
     materialsOutsideMask: []
   disableRenderingOnOverride: 1
-  _animationName: idle
-  loop: 1
+  _animationName: 
+  loop: 0
   timeScale: 1
+--- !u!114 &8284916673642109381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3782837973247313983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e41675c27d5a4814a01ec486a9980c6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FirstLevelHandTutorial
+  handRoot: {fileID: 8669903059797940563}
+  spineHand: {fileID: 6010603214968683594}
+  targetPiece: {fileID: 7512520023656309016}
+  targetTray: {fileID: 3449504616342755656}
+  tutorialLevelIndex: 0
+  onlyRunOnTutorialLevel: 1
+  moveToTrayDuration: 0.65
+  fadeDuration: 0.5
+  repeatDelay: 0.15
+  chocolatePointOffset: {x: 0, y: -0.3, z: 0}
+  trayPointOffset: {x: 0, y: -0.3, z: 0}
+  snapToChocolateOnStart: 1
 --- !u!1 &3944513504474850358
 GameObject:
   m_ObjectHideFlags: 0

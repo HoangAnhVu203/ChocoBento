@@ -14,8 +14,10 @@ public class PanelLoading : UICanvas
 
     private readonly List<CatItem> catItems = new List<CatItem>();
     private Coroutine loadingAnimation;
+    private float minimumVisibleDuration;
 
     public float AnimationDuration => GetAnimationDuration();
+    public bool IsAnimating => loadingAnimation != null;
 
     private class CatItem
     {
@@ -52,6 +54,11 @@ public class PanelLoading : UICanvas
         }
 
         base.CloseDirectly();
+    }
+
+    public void SetMinimumVisibleDuration(float duration)
+    {
+        minimumVisibleDuration = Mathf.Max(0f, duration);
     }
 
     private void CacheCats()
@@ -101,7 +108,10 @@ public class PanelLoading : UICanvas
             }
         }
 
-        yield return new WaitForSecondsRealtime(spawnDuration + waitAfterSpawn);
+        float spawnTime = spawnDuration + staggerDelay * Mathf.Max(0, catItems.Count - 1);
+        float despawnTime = despawnDuration + staggerDelay * Mathf.Max(0, catItems.Count - 1);
+        float holdTime = Mathf.Max(waitAfterSpawn, minimumVisibleDuration - spawnTime - despawnTime);
+        yield return new WaitForSecondsRealtime(spawnDuration + holdTime);
 
         for (int i = catItems.Count - 1; i >= 0; i--)
         {
@@ -120,6 +130,7 @@ public class PanelLoading : UICanvas
 
     private IEnumerator AnimateCat(CatItem cat, float fromScale, float toScale, float duration)
     {
+        cat.Rect.gameObject.SetActive(true);
         float elapsed = 0f;
         duration = Mathf.Max(0.01f, duration);
 
@@ -139,6 +150,11 @@ public class PanelLoading : UICanvas
 
         cat.Rect.localScale = cat.OriginalScale * toScale;
         cat.Rect.localRotation = cat.OriginalRotation;
+
+        if (toScale <= 0f)
+        {
+            cat.Rect.gameObject.SetActive(false);
+        }
     }
 
     private float EaseOutBack(float time)
@@ -153,6 +169,6 @@ public class PanelLoading : UICanvas
         int staggerCount = Mathf.Max(0, catItems.Count - 1);
         float spawnTime = spawnDuration + staggerDelay * staggerCount;
         float despawnTime = despawnDuration + staggerDelay * staggerCount;
-        return spawnTime + waitAfterSpawn + despawnTime;
+        return Mathf.Max(minimumVisibleDuration, spawnTime + waitAfterSpawn + despawnTime);
     }
 }

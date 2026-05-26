@@ -103,7 +103,7 @@ public sealed class TargetTray : MonoBehaviour
 
         if (TryFindBestPlacementAnchor(piece, desiredAnchor, out previewAnchor))
         {
-            isValid = true;
+            isValid = IsStrawberryPlacementValid(piece, previewAnchor, false);
             return true;
         }
 
@@ -123,7 +123,7 @@ public sealed class TargetTray : MonoBehaviour
 
         foreach (var piece in pieces)
         {
-            if (piece == null)
+            if (piece == null || !piece.IsInTargetTray)
             {
                 continue;
             }
@@ -148,7 +148,7 @@ public sealed class TargetTray : MonoBehaviour
         var filledSlots = new HashSet<Vector3Int>();
         foreach (var piece in pieces)
         {
-            if (piece == null)
+            if (piece == null || !piece.IsInTargetTray)
             {
                 continue;
             }
@@ -316,9 +316,9 @@ public sealed class TargetTray : MonoBehaviour
             if (!hasPieceStrawberry && requiresStrawberry)
             {
                 isValid = false;
-                if (showMarkers && strawberryMismatchMarkers.TryGetValue(occupiedCell, out var marker))
+                if (showMarkers)
                 {
-                    marker.gameObject.SetActive(true);
+                    piece.SetStrawberryMismatchMarkerVisible(cells[i], true);
                 }
             }
         }

@@ -15,6 +15,7 @@ public sealed class LevelManager : Singleton<LevelManager>
     private GameObject currentLevelInstance;
 
     public int CurrentLevelIndex { get; private set; }
+    public int CurrentNormalLevelNumber => CurrentLevelIndex + 1;
     public int CurrentCutCount => GetLevel(CurrentLevelIndex).CutCount;
     public int LevelCount => levels != null ? levels.Length : 0;
 
@@ -49,6 +50,7 @@ public sealed class LevelManager : Singleton<LevelManager>
         }
 
         SaveBestStars(CurrentLevelIndex, earnedStars);
+        LeaderBoardService.Instance?.ReportLevelCompleted(CurrentNormalLevelNumber);
         var nextIndex = (CurrentLevelIndex + 1) % LevelCount;
         SetCurrentLevelIndex(nextIndex);
     }

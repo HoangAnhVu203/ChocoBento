@@ -1,87 +1,102 @@
-// using System.Threading.Tasks;
-// using Firebase;
-// using Firebase.Extensions;
-// using UnityEngine;
+using System.Threading.Tasks;
+using Firebase;
+using Firebase.Extensions;
+using UnityEngine;
 
-// public class FirebaseBootstrap : MonoBehaviour
-// {
-//     public static FirebaseBootstrap Instance { get; private set; }
+public class FirebaseBootstrap : MonoBehaviour
+{
+    public static FirebaseBootstrap Instance { get; private set; }
 
-//     [SerializeField] private bool initializeOnStart = true;
+    [SerializeField] private bool initializeOnStart = true;
 
-//     public bool IsInitialized { get; private set; }
-//     public DependencyStatus DependencyStatus { get; private set; } = DependencyStatus.UnavailableOther;
+    public bool IsInitialized { get; private set; }
+    public DependencyStatus DependencyStatus { get; private set; } = DependencyStatus.UnavailableOther;
 
-//     private PlayerAuthService authService;
-//     private bool isInitializing;
+    private PlayerAuthService authService;
+    private bool isInitializing;
 
-//     private void Awake()
-//     {
-//         if (Instance != null && Instance != this)
-//         {
-//             Destroy(gameObject);
-//             return;
-//         }
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void EnsureFirebaseServicesExist()
+    {
+        if (FindFirstObjectByType<FirebaseBootstrap>() != null)
+        {
+            return;
+        }
 
-//         Instance = this;
-//         DontDestroyOnLoad(gameObject);
+        GameObject services = new GameObject("Firebase Services");
+        DontDestroyOnLoad(services);
+        services.AddComponent<LeaderBoardService>();
+        services.AddComponent<PlayerAuthService>();
+        services.AddComponent<FirebaseBootstrap>();
+    }
 
-//         authService = GetComponent<PlayerAuthService>() ?? FindFirstObjectByType<PlayerAuthService>();
-//     }
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
-//     private void Start()
-//     {
-//         if (initializeOnStart)
-//         {
-//             InitializeFirebase();
-//         }
-//     }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
 
-//     public void InitializeFirebase()
-//     {
-//         if (IsInitialized || isInitializing)
-//         {
-//             return;
-//         }
+        authService = GetComponent<PlayerAuthService>() ?? FindFirstObjectByType<PlayerAuthService>();
+    }
 
-//         isInitializing = true;
+    private void Start()
+    {
+        if (initializeOnStart)
+        {
+            InitializeFirebase();
+        }
+    }
 
-//         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(OnDependencyCheckCompleted);
-//     }
+    public void InitializeFirebase()
+    {
+        if (IsInitialized || isInitializing)
+        {
+            return;
+        }
 
-//     private void OnDependencyCheckCompleted(Task<DependencyStatus> task)
-//     {
-//         isInitializing = false;
+        isInitializing = true;
 
-//         if (task.IsCanceled)
-//         {
-//             Debug.LogError("[FirebaseBootstrap] Dependency check was canceled.");
-//             return;
-//         }
+        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(OnDependencyCheckCompleted);
+    }
 
-//         if (task.IsFaulted)
-//         {
-//             Debug.LogError($"[FirebaseBootstrap] Dependency check failed: {task.Exception}");
-//             return;
-//         }
+    private void OnDependencyCheckCompleted(Task<DependencyStatus> task)
+    {
+        isInitializing = false;
 
-//         DependencyStatus = task.Result;
-//         if (DependencyStatus != DependencyStatus.Available)
-//         {
-//             Debug.LogError($"[FirebaseBootstrap] Firebase dependencies are not available: {DependencyStatus}");
-//             return;
-//         }
+        if (task.IsCanceled)
+        {
+            Debug.LogError("[FirebaseBootstrap] Dependency check was canceled.");
+            return;
+        }
 
-//         IsInitialized = true;
-//         Debug.Log("[FirebaseBootstrap] Firebase initialized successfully.");
+        if (task.IsFaulted)
+        {
+            Debug.LogError($"[FirebaseBootstrap] Dependency check failed: {task.Exception}");
+            return;
+        }
 
-//         authService ??= FindFirstObjectByType<PlayerAuthService>();
-//         if (authService == null)
-//         {
-//             Debug.LogError("[FirebaseBootstrap] PlayerAuthService not found in scene.");
-//             return;
-//         }
+        DependencyStatus = task.Result;
+        if (DependencyStatus != DependencyStatus.Available)
+        {
+            Debug.LogError($"[FirebaseBootstrap] Firebase dependencies are not available: {DependencyStatus}");
+            return;
+        }
 
-//         authService.Initialize();
-//     }
-// }
+        IsInitialized = true;
+        Debug.Log("[FirebaseBootstrap] Firebase initialized successfully.");
+
+        authService ??= FindFirstObjectByType<PlayerAuthService>();
+        if (authService == null)
+        {
+            Debug.LogError("[FirebaseBootstrap] PlayerAuthService not found in scene.");
+            return;
+        }
+
+        authService.Initialize();
+    }
+}

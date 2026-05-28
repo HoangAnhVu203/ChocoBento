@@ -1,16 +1,16 @@
-// using System;
-// using Firebase.Firestore;
+using System;
+using Firebase.Firestore;
 
-// [FirestoreData]
-// [Serializable]
-// public class LeaderboardPlayerData
-// {
-//     [FirestoreDocumentId]
-//     public string Uid { get; set; }
+[FirestoreData]
+[Serializable]
+public class LeaderboardPlayerData
+{
+    [FirestoreDocumentId]
+    public string Uid { get; set; }
 
-//     [FirestoreProperty("displayName")]
-//     public string DisplayName { get; set; }
+    [FirestoreProperty("displayName")]
+    public string DisplayName { get; set; }
 
-//     [FirestoreProperty("highestCompletedLevel")]
-//     public int HighestCompletedLevel { get; set; }
-// }
+    [FirestoreProperty("highestCompletedLevel")]
+    public int HighestCompletedLevel { get; set; }
+}

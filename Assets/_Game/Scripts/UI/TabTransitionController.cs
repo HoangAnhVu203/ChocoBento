@@ -192,7 +192,7 @@ public class TabTransitionController : MonoBehaviour
 
         if (target == Tab.Lock)
         {
-            // UIManager.Instance?.GetUI<PanelLeaderBoard>()?.NotifySelectedFromTab();
+            UIManager.Instance?.GetUI<PanelLeaderBoard>()?.NotifySelectedFromTab();
         }
     }
 

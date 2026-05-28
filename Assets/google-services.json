@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1068882581117",
+    "project_id": "leaderboardchocobento",
+    "storage_bucket": "leaderboardchocobento.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068882581117:android:8ccd99b67cd83150608314",
+        "android_client_info": {
+          "package_name": "com.choco"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMLeIkoVWW4TeKQDbBUux3_k7FPN18yGE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -60,8 +60,22 @@ public class FooterTabBar : UICanvas
 
     private void OnEnable()
     {
+        SetFooterY(100f);
         AutoBind();
         StartCoroutine(ResetDefaultNextFrame());
+    }
+
+    private void SetFooterY(float y)
+    {
+        var rectTransform = transform as RectTransform;
+        if (rectTransform == null)
+        {
+            return;
+        }
+
+        var anchoredPosition = rectTransform.anchoredPosition;
+        anchoredPosition.y = y;
+        rectTransform.anchoredPosition = anchoredPosition;
     }
     private IEnumerator ResetDefaultNextFrame()
     {

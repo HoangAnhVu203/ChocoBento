@@ -117,7 +117,8 @@ public class PanelHome : UICanvas
 
     public void OpenSetting()
     {
-        UIManager.Instance.OpenUI<PanelSetting>();
+        var panelSetting = UIManager.Instance.OpenUI<PanelSetting>();
+        panelSetting.SetOpenedFromHome(true);
     }
 
     public void RefreshLevelItems()

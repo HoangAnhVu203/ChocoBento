@@ -4,6 +4,7 @@ using UnityEngine;
 public sealed class HeartManager : Singleton<HeartManager>
 {
     private const string HeartCountKey = "ChocoBento.HeartCount";
+    private const string BonusHeartCountKey = "ChocoBento.BonusHeartCount";
     private const string LastRechargeUtcTicksKey = "ChocoBento.HeartLastRechargeUtcTicks";
 
     [SerializeField, Min(1)] private int maxHeartCount = 5;
@@ -15,9 +16,11 @@ public sealed class HeartManager : Singleton<HeartManager>
     public event Action<int> HeartChanged;
     public event Action<TimeSpan, bool> CountdownChanged;
 
-    public int HeartCount => Mathf.Clamp(PlayerPrefs.GetInt(HeartCountKey, startFullIfNoSave ? maxHeartCount : 0), 0, maxHeartCount);
+    public int NormalHeartCount => Mathf.Clamp(PlayerPrefs.GetInt(HeartCountKey, startFullIfNoSave ? maxHeartCount : 0), 0, maxHeartCount);
+    public int BonusHeartCount => Mathf.Max(0, PlayerPrefs.GetInt(BonusHeartCountKey, 0));
+    public int HeartCount => NormalHeartCount + BonusHeartCount;
     public int MaxHeartCount => maxHeartCount;
-    public bool IsFull => HeartCount >= maxHeartCount;
+    public bool IsFull => NormalHeartCount >= maxHeartCount;
 
     private void Awake()
     {
@@ -52,10 +55,22 @@ public sealed class HeartManager : Singleton<HeartManager>
             return false;
         }
 
-        int previousHeartCount = HeartCount;
-        SetHeartCountInternal(previousHeartCount - amount);
+        int previousNormalHeartCount = NormalHeartCount;
+        int remainingAmount = amount;
+        int currentBonusHeartCount = BonusHeartCount;
+        if (currentBonusHeartCount > 0)
+        {
+            int usedBonusHeartCount = Mathf.Min(currentBonusHeartCount, remainingAmount);
+            SetBonusHeartCountInternal(currentBonusHeartCount - usedBonusHeartCount);
+            remainingAmount -= usedBonusHeartCount;
+        }
 
-        if (previousHeartCount >= maxHeartCount)
+        if (remainingAmount > 0)
+        {
+            SetHeartCountInternal(previousNormalHeartCount - remainingAmount);
+        }
+
+        if (remainingAmount > 0 && previousNormalHeartCount >= maxHeartCount)
         {
             SetLastRechargeUtc(DateTime.UtcNow);
         }
@@ -72,12 +87,24 @@ public sealed class HeartManager : Singleton<HeartManager>
         }
 
         ApplyOfflineRecharge();
-        SetHeartCountInternal(HeartCount + amount);
+        SetHeartCountInternal(NormalHeartCount + amount);
         if (IsFull)
         {
             SetLastRechargeUtc(DateTime.UtcNow);
         }
 
+        PublishState();
+    }
+
+    public void AddBonusHeart(int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        ApplyOfflineRecharge();
+        SetBonusHeartCountInternal(BonusHeartCount + amount);
         PublishState();
     }
 
@@ -107,6 +134,11 @@ public sealed class HeartManager : Singleton<HeartManager>
             PlayerPrefs.SetInt(HeartCountKey, startFullIfNoSave ? maxHeartCount : 0);
         }
 
+        if (!PlayerPrefs.HasKey(BonusHeartCountKey))
+        {
+            PlayerPrefs.SetInt(BonusHeartCountKey, 0);
+        }
+
         if (!PlayerPrefs.HasKey(LastRechargeUtcTicksKey))
         {
             PlayerPrefs.SetString(LastRechargeUtcTicksKey, DateTime.UtcNow.Ticks.ToString());
@@ -117,7 +149,7 @@ public sealed class HeartManager : Singleton<HeartManager>
 
     private void ApplyOfflineRecharge()
     {
-        int currentHeartCount = HeartCount;
+        int currentHeartCount = NormalHeartCount;
         if (currentHeartCount >= maxHeartCount)
         {
             SetHeartCountInternal(maxHeartCount);
@@ -168,6 +200,12 @@ public sealed class HeartManager : Singleton<HeartManager>
     private void SetHeartCountInternal(int heartCount)
     {
         PlayerPrefs.SetInt(HeartCountKey, Mathf.Clamp(heartCount, 0, maxHeartCount));
+        PlayerPrefs.Save();
+    }
+
+    private void SetBonusHeartCountInternal(int heartCount)
+    {
+        PlayerPrefs.SetInt(BonusHeartCountKey, Mathf.Max(0, heartCount));
         PlayerPrefs.Save();
     }
 

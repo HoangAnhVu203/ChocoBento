@@ -222,15 +222,28 @@ public sealed class GameManager : Singleton<GameManager>
         var leaderboard = UIManager.Instance.GetUI<PanelLeaderBoard>();
         var home = UIManager.Instance.GetUI<PanelHome>();
         var shop = UIManager.Instance.GetUI<PanelShop>();
+        var footer = UIManager.Instance.OpenUI<FooterTabBar>();
 
         leaderboard.transform.SetSiblingIndex(0);
         home.transform.SetSiblingIndex(1);
         shop.transform.SetSiblingIndex(2);
+        footer.transform.SetSiblingIndex(3);
 
-        leaderboard.gameObject.SetActive(false);
+        leaderboard.Open();
         home.Open();
-        shop.gameObject.SetActive(false);
-        UIManager.Instance.CloseUIDirectly<FooterTabBar>();
+        shop.Open();
+
+        var transition = footer.GetComponent<TabTransitionController>();
+        if (transition == null)
+        {
+            transition = footer.gameObject.AddComponent<TabTransitionController>();
+        }
+
+        footer.SetTransitionController(transition);
+        transition.ConfigurePanels(leaderboard, home, shop);
+        transition.RefreshAfterUIOpened();
+        transition.ShowHomeImmediate();
+        footer.SelectHome(false);
     }
 
     public bool IsBootTutorialDone()

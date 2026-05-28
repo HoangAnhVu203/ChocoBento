@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b5e127b1f88e43a9afa190783f2fa5e, type: 3}
+  m_Name: Coin4
+  m_EditorClassIdentifier: Assembly-CSharp::ShopPackageConfig
+  packageId: 6
+  packageName: Coin4
+  description: 
+  packageType: 0
+  productId: 6
+  priceText: "184.000 \u0111"
+  rewards:
+  - type: 0
+    amount: 21000

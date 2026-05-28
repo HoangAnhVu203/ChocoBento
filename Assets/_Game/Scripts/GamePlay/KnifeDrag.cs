@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public enum KnifeCutDirection
@@ -17,6 +18,10 @@ public sealed class KnifeDrag : MonoBehaviour, IDraggableGameplay
     private int cutIndex = -1;
     private int cutStartIndex;
     private int cutLength;
+    private bool isDragging;
+
+    public event Action DragStarted;
+    public event Action DragEnded;
 
     public KnifeCutDirection CutDirection => cutDirection;
     public ChocolatePiece HoveredPiece => hoveredPiece;
@@ -24,6 +29,7 @@ public sealed class KnifeDrag : MonoBehaviour, IDraggableGameplay
     public int CutStartIndex => cutStartIndex;
     public int CutLength => cutLength;
     public int BladeLengthInCells => bladeLengthInCells;
+    public bool IsDragging => isDragging;
     public bool HasValidCut => hoveredPiece != null && cutIndex > 0 && cutLength > 0;
 
     private void Awake()
@@ -41,8 +47,10 @@ public sealed class KnifeDrag : MonoBehaviour, IDraggableGameplay
 
     public void BeginDrag(Vector3 pointerWorldPosition)
     {
+        isDragging = true;
         dragOffset = transform.position - pointerWorldPosition;
         GameplayLevelController.Instance?.SetSelectedKnife(this);
+        DragStarted?.Invoke();
     }
 
     public void Drag(Vector3 pointerWorldPosition)
@@ -85,9 +93,11 @@ public sealed class KnifeDrag : MonoBehaviour, IDraggableGameplay
 
     public void EndDrag(Vector3 pointerWorldPosition)
     {
+        isDragging = false;
         RefreshCutData(true);
         GameplayLevelController.Instance?.SetSelectedKnife(this);
         GameplayLevelController.Instance?.SetCanCut(HasValidCut);
+        DragEnded?.Invoke();
     }
 
     public bool RefreshCutData(bool snapPosition = false)

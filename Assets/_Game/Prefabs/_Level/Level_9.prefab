@@ -114,18 +114,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelHintData
   steps:
   - targetSlots:
+    - {fileID: 8735712664557937806}
     - {fileID: 3884475167076518614}
     - {fileID: 4934717457251006493}
     gridCells: []
   - targetSlots:
-    - {fileID: 8735712664557937806}
-    - {fileID: 7252234751097704280}
-    - {fileID: 4842091632721779358}
+    - {fileID: 7200812476208572255}
+    - {fileID: 8091908609910777859}
+    - {fileID: 5397792740551469492}
     gridCells: []
   - targetSlots:
-    - {fileID: 5397792740551469492}
-    - {fileID: 8091908609910777859}
-    - {fileID: 7200812476208572255}
+    - {fileID: 4842091632721779358}
+    - {fileID: 7252234751097704280}
     gridCells: []
 --- !u!1 &5152857005554347929
 GameObject:
@@ -1091,11 +1091,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8545282883523516679, guid: b3d1ea4b29f7144668c5391d453731cb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8545282883523516679, guid: b3d1ea4b29f7144668c5391d453731cb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8545282883523516679, guid: b3d1ea4b29f7144668c5391d453731cb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1351,11 +1351,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1602410612923354483, guid: f963710e76497413c806105bfa22e93e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1602410612923354483, guid: f963710e76497413c806105bfa22e93e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1602410612923354483, guid: f963710e76497413c806105bfa22e93e, type: 3}
       propertyPath: m_LocalPosition.z

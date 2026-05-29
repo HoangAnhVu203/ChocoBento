@@ -50,22 +50,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelHintData
   steps:
   - targetSlots:
+    - {fileID: 4101674926071512875}
+    - {fileID: 9182271613900966660}
+    - {fileID: 4450057110616551328}
+    - {fileID: 8946579425556715001}
+    - {fileID: 1617256645511418154}
+    gridCells: []
+  - targetSlots:
     - {fileID: 5315004586176046034}
-    - {fileID: 4822324820560138121}
     - {fileID: 1457749802162630100}
-    - {fileID: 7853462950215341}
+    - {fileID: 7348410656482189038}
+    - {fileID: 6943035931673659744}
     - {fileID: 5895710819334573278}
     gridCells: []
   - targetSlots:
-    - {fileID: 9182271613900966660}
-    - {fileID: 8946579425556715001}
-    - {fileID: 1617256645511418154}
-    - {fileID: 7348410656482189038}
-    - {fileID: 6943035931673659744}
+    - {fileID: 4822324820560138121}
     gridCells: []
   - targetSlots:
-    - {fileID: 4101674926071512875}
-    - {fileID: 4450057110616551328}
+    - {fileID: 7853462950215341}
     gridCells: []
 --- !u!1 &3071821229158936330
 GameObject:
@@ -508,6 +510,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TraySlot
       objectReference: {fileID: 0}
+    - target: {fileID: 6730886497679252893, guid: f963710e76497413c806105bfa22e93e, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -569,6 +575,10 @@ PrefabInstance:
     - target: {fileID: 6214279730944486089, guid: f963710e76497413c806105bfa22e93e, type: 3}
       propertyPath: m_Name
       value: TraySlot
+      objectReference: {fileID: 0}
+    - target: {fileID: 6730886497679252893, guid: f963710e76497413c806105bfa22e93e, type: 3}
+      propertyPath: m_Color.a
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -652,7 +662,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 211284253355102402, guid: e3a2d2b5f17c346649fecde36e55c318, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.5
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 211284253355102402, guid: e3a2d2b5f17c346649fecde36e55c318, type: 3}
       propertyPath: m_LocalPosition.y
@@ -755,6 +765,10 @@ PrefabInstance:
     - target: {fileID: 6214279730944486089, guid: f963710e76497413c806105bfa22e93e, type: 3}
       propertyPath: m_Name
       value: TraySlot
+      objectReference: {fileID: 0}
+    - target: {fileID: 6730886497679252893, guid: f963710e76497413c806105bfa22e93e, type: 3}
+      propertyPath: m_Color.a
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1004,6 +1018,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TraySlot
       objectReference: {fileID: 0}
+    - target: {fileID: 6730886497679252893, guid: f963710e76497413c806105bfa22e93e, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1065,6 +1083,10 @@ PrefabInstance:
     - target: {fileID: 6214279730944486089, guid: f963710e76497413c806105bfa22e93e, type: 3}
       propertyPath: m_Name
       value: TraySlot
+      objectReference: {fileID: 0}
+    - target: {fileID: 6730886497679252893, guid: f963710e76497413c806105bfa22e93e, type: 3}
+      propertyPath: m_Color.a
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1148,7 +1170,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 211284253355102402, guid: e3a2d2b5f17c346649fecde36e55c318, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.5
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 211284253355102402, guid: e3a2d2b5f17c346649fecde36e55c318, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1314,6 +1336,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TraySlot
       objectReference: {fileID: 0}
+    - target: {fileID: 6730886497679252893, guid: f963710e76497413c806105bfa22e93e, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1334,7 +1360,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 211284253355102402, guid: e3a2d2b5f17c346649fecde36e55c318, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.5
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 211284253355102402, guid: e3a2d2b5f17c346649fecde36e55c318, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1438,6 +1464,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TraySlot
       objectReference: {fileID: 0}
+    - target: {fileID: 6730886497679252893, guid: f963710e76497413c806105bfa22e93e, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1499,6 +1529,10 @@ PrefabInstance:
     - target: {fileID: 6214279730944486089, guid: f963710e76497413c806105bfa22e93e, type: 3}
       propertyPath: m_Name
       value: TraySlot
+      objectReference: {fileID: 0}
+    - target: {fileID: 6730886497679252893, guid: f963710e76497413c806105bfa22e93e, type: 3}
+      propertyPath: m_Color.a
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1624,6 +1658,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TraySlot
       objectReference: {fileID: 0}
+    - target: {fileID: 6730886497679252893, guid: f963710e76497413c806105bfa22e93e, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1686,6 +1724,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TraySlot
       objectReference: {fileID: 0}
+    - target: {fileID: 6730886497679252893, guid: f963710e76497413c806105bfa22e93e, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1747,6 +1789,10 @@ PrefabInstance:
     - target: {fileID: 6214279730944486089, guid: f963710e76497413c806105bfa22e93e, type: 3}
       propertyPath: m_Name
       value: TraySlot
+      objectReference: {fileID: 0}
+    - target: {fileID: 6730886497679252893, guid: f963710e76497413c806105bfa22e93e, type: 3}
+      propertyPath: m_Color.a
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1871,6 +1917,10 @@ PrefabInstance:
     - target: {fileID: 6214279730944486089, guid: f963710e76497413c806105bfa22e93e, type: 3}
       propertyPath: m_Name
       value: TraySlot
+      objectReference: {fileID: 0}
+    - target: {fileID: 6730886497679252893, guid: f963710e76497413c806105bfa22e93e, type: 3}
+      propertyPath: m_Color.a
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

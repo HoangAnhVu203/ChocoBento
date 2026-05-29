@@ -305,11 +305,11 @@ MonoBehaviour:
   - targetSlots:
     - {fileID: 6733211688972850153}
     - {fileID: 5877444717014063829}
-    - {fileID: 7423799332620219552}
     gridCells: []
   - targetSlots:
     - {fileID: 7527258459684064872}
     - {fileID: 5723086406856115629}
+    - {fileID: 7423799332620219552}
     gridCells: []
   - targetSlots:
     - {fileID: 6480312696049687471}
@@ -582,7 +582,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8545282883523516679, guid: b3d1ea4b29f7144668c5391d453731cb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8545282883523516679, guid: b3d1ea4b29f7144668c5391d453731cb, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1420,7 +1420,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1602410612923354483, guid: f963710e76497413c806105bfa22e93e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1602410612923354483, guid: f963710e76497413c806105bfa22e93e, type: 3}
       propertyPath: m_LocalPosition.y

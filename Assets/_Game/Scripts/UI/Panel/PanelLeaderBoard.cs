@@ -15,6 +15,15 @@ public class PanelLeaderBoard : UICanvas
         public Color defaultDisplayNameColor;
     }
 
+    [Serializable]
+    private class TopPlayerBinding
+    {
+        public Transform root;
+        public Text displayNameText;
+        public Text levelText;
+        public Color defaultDisplayNameColor;
+    }
+
     [Header("Leaderboard UI")]
     [SerializeField] private ScrollRect scrollRect;
     [SerializeField] private int maxRows = 10;
@@ -22,6 +31,7 @@ public class PanelLeaderBoard : UICanvas
     [SerializeField] private string emptyDisplayName = "---";
     [SerializeField] private string emptyLevelText = "Lv.0";
     [SerializeField] private Color selfDisplayNameColor = new Color(0.95f, 0.2f, 0.2f, 1f);
+    [SerializeField] private List<TopPlayerBinding> topPlayerBindings = new List<TopPlayerBinding>();
     [SerializeField] private List<LeaderboardRowBinding> rowBindings = new List<LeaderboardRowBinding>();
 
     [Header("Lock By Level")]
@@ -36,6 +46,7 @@ public class PanelLeaderBoard : UICanvas
         base.SetUp();
         CacheRowDefaultColors();
         FillEmptyRows();
+        FillEmptyTopPlayers();
         ResetScrollToTop();
     }
 
@@ -49,6 +60,7 @@ public class PanelLeaderBoard : UICanvas
     {
         CacheRowDefaultColors();
         FillEmptyRows();
+        FillEmptyTopPlayers();
         ResetScrollToTop();
         RefreshLockByLevel();
 
@@ -173,7 +185,7 @@ public class PanelLeaderBoard : UICanvas
             yield break;
         }
 
-        int limit = Mathf.Max(1, rowBindings.Count > 0 ? rowBindings.Count : maxRows);
+        int limit = Mathf.Max(1, maxRows, rowBindings.Count, topPlayerBindings.Count);
         LeaderBoardService.Instance.GetTopPlayers(limit, OnLeaderboardLoaded, OnLeaderboardLoadFailed);
 
         loadLeaderboardCoroutine = null;
@@ -200,6 +212,7 @@ public class PanelLeaderBoard : UICanvas
             }
         }
 
+        ApplyTopPlayers(players);
         ResetScrollToTop();
     }
 
@@ -207,6 +220,7 @@ public class PanelLeaderBoard : UICanvas
     {
         Debug.LogError($"[PanelLeaderBoard] Failed to load leaderboard: {exception}");
         FillEmptyRows();
+        FillEmptyTopPlayers();
         ShowLocalPlayerRow();
     }
 
@@ -220,6 +234,15 @@ public class PanelLeaderBoard : UICanvas
         for (int i = 0; i < rowBindings.Count; i++)
         {
             LeaderboardRowBinding binding = rowBindings[i];
+            if (binding != null && binding.displayNameText != null)
+            {
+                binding.defaultDisplayNameColor = binding.displayNameText.color;
+            }
+        }
+
+        for (int i = 0; i < topPlayerBindings.Count; i++)
+        {
+            TopPlayerBinding binding = topPlayerBindings[i];
             if (binding != null && binding.displayNameText != null)
             {
                 binding.defaultDisplayNameColor = binding.displayNameText.color;
@@ -249,6 +272,36 @@ public class PanelLeaderBoard : UICanvas
         }
     }
 
+    private void FillEmptyTopPlayers()
+    {
+        for (int i = 0; i < topPlayerBindings.Count; i++)
+        {
+            ApplyTopPlayer(topPlayerBindings[i], emptyDisplayName, emptyLevelText, false);
+        }
+    }
+
+    private void ApplyTopPlayers(List<LeaderboardPlayerData> players)
+    {
+        for (int i = 0; i < topPlayerBindings.Count; i++)
+        {
+            if (players != null && i < players.Count)
+            {
+                LeaderboardPlayerData player = players[i];
+                string displayName = string.IsNullOrEmpty(player.DisplayName) ? emptyDisplayName : player.DisplayName;
+                string levelText = $"Lv.{Mathf.Max(0, player.HighestCompletedLevel)}";
+                bool isCurrentPlayer = PlayerAuthService.Instance != null
+                    && !string.IsNullOrEmpty(player.Uid)
+                    && player.Uid == PlayerAuthService.Instance.CurrentUserId;
+
+                ApplyTopPlayer(topPlayerBindings[i], displayName, levelText, isCurrentPlayer);
+            }
+            else
+            {
+                ApplyTopPlayer(topPlayerBindings[i], emptyDisplayName, emptyLevelText, false);
+            }
+        }
+    }
+
     private void ApplyRow(LeaderboardRowBinding binding, int rank, string displayName, string levelText, bool isCurrentPlayer)
     {
         if (binding == null)
@@ -263,7 +316,31 @@ public class PanelLeaderBoard : UICanvas
 
         if (binding.displayNameText != null)
         {
-            binding.displayNameText.text = showRankPrefix ? $"{rank}. {displayName}" : displayName;
+            binding.displayNameText.text = showRankPrefix ? $"{displayName}" : displayName;
+            binding.displayNameText.color = isCurrentPlayer ? selfDisplayNameColor : binding.defaultDisplayNameColor;
+        }
+
+        if (binding.levelText != null)
+        {
+            binding.levelText.text = levelText;
+        }
+    }
+
+    private void ApplyTopPlayer(TopPlayerBinding binding, string displayName, string levelText, bool isCurrentPlayer)
+    {
+        if (binding == null)
+        {
+            return;
+        }
+
+        if (binding.root != null)
+        {
+            binding.root.gameObject.SetActive(true);
+        }
+
+        if (binding.displayNameText != null)
+        {
+            binding.displayNameText.text = displayName;
             binding.displayNameText.color = isCurrentPlayer ? selfDisplayNameColor : binding.defaultDisplayNameColor;
         }
 

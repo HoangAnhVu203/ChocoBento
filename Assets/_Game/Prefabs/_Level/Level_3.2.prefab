@@ -457,8 +457,8 @@ MonoBehaviour:
   targetKnife: {fileID: 1101423184139822431}
   targetPiece: {fileID: 8422469937876257662}
   cutPointOverride: {fileID: 1126019174036151172}
-  tutorialLevelIndex: 2
-  tutorialLevelName: Level_3
+  tutorialLevelIndex: 3
+  tutorialLevelName: Level_3.2
   onlyRunOnTutorialLevel: 1
   moveToCutDuration: 0.65
   fadeDuration: 0.4

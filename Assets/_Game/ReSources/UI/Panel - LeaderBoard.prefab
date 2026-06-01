@@ -3451,7 +3451,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Unlock at level 20
+  m_Text: Unlock at level 50
 --- !u!114 &6360507942441807011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4998,7 +4998,7 @@ MonoBehaviour:
     levelText: {fileID: 748756562618637551}
     defaultDisplayNameColor: {r: 0, g: 0.44313726, b: 0.7372549, a: 1}
   lockObjectAtLevel20: {fileID: 5226397140718194948}
-  lockAtLevel: 20
+  lockAtLevel: 50
 --- !u!114 &5410533040494574578
 MonoBehaviour:
   m_ObjectHideFlags: 0

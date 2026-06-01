@@ -36,7 +36,7 @@ public class PanelLeaderBoard : UICanvas
 
     [Header("Lock By Level")]
     [SerializeField] private GameObject lockObjectAtLevel20;
-    [SerializeField] private int lockAtLevel = 20;
+    [SerializeField] private int lockAtLevel = 50;
 
     private Coroutine loadLeaderboardCoroutine;
     private bool rowDefaultColorsCached;

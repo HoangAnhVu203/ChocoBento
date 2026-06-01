@@ -11,7 +11,7 @@ public class LeaderBoardService : MonoBehaviour
     private const string CollectionName = "leaderboard_players";
     private const string PrefHighestCompletedLevel = "LB_HIGHEST_COMPLETED_LEVEL";
     private const string PrefDisplayName = "LB_DISPLAY_NAME";
-    private const int MinimumFirestoreSyncLevel = 20;
+    private const int MinimumFirestoreSyncLevel = 50;
     private const string FieldUid = "uid";
     private const string FieldDisplayName = "displayName";
     private const string FieldHighestCompletedLevel = "highestCompletedLevel";

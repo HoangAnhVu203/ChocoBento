@@ -68,8 +68,8 @@ public class ToggleSetting : MonoBehaviour
                 PlayerPrefs.SetInt("MUSIC_ON", isOn ? 1 : 0);
 
                 // Ví dụ:
-                // if (AudioManager.Instance.musicSource)
-                //     AudioManager.Instance.musicSource.mute = !isOn;
+                if (AudioManager.Instance.musicSource)
+                    AudioManager.Instance.musicSource.mute = !isOn;
 
                 break;
 

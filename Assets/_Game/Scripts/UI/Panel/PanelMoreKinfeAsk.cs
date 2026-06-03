@@ -110,4 +110,6 @@ public class PanelMoreKinfeAsk : UICanvas
 
         return false;
     }
+
+    public void CloseUI() => UIManager.Instance.CloseUIDirectly<PanelHintAsk>();
 }

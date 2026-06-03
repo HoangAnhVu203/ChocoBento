@@ -101,4 +101,6 @@ public class PanelHintAsk : UICanvas
 
         return false;
     }
+
+    public void CloseUI() => UIManager.Instance.CloseUIDirectly<PanelHintAsk>();
 }

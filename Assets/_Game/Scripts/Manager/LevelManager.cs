@@ -17,6 +17,8 @@ public sealed class LevelManager : Singleton<LevelManager>
     public int CurrentLevelIndex { get; private set; }
     public int CurrentNormalLevelNumber => CurrentLevelIndex + 1;
     public int CurrentCutCount => GetLevel(CurrentLevelIndex).CutCount;
+    public bool CurrentLevelHasTimer => GetLevel(CurrentLevelIndex).HasTimer;
+    public float CurrentLevelTimeLimitSeconds => GetLevel(CurrentLevelIndex).TimeLimitSeconds;
     public int LevelCount => levels != null ? levels.Length : 0;
 
     private void Awake()
@@ -252,13 +254,19 @@ public struct LevelConfig
 {
     [SerializeField] private GameObject prefab;
     [SerializeField, Range(0, 2)] private int cutCount;
+    [SerializeField] private bool hasTimer;
+    [SerializeField, Min(1f)] private float timeLimitSeconds;
 
     public GameObject Prefab => prefab;
     public int CutCount => cutCount;
+    public bool HasTimer => hasTimer;
+    public float TimeLimitSeconds => timeLimitSeconds > 0f ? timeLimitSeconds : 60f;
 
     public LevelConfig(GameObject prefab, int cutCount)
     {
         this.prefab = prefab;
         this.cutCount = Mathf.Clamp(cutCount, 0, 2);
+        hasTimer = false;
+        timeLimitSeconds = 60f;
     }
 }

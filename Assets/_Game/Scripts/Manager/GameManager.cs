@@ -52,6 +52,7 @@ public sealed class GameManager : Singleton<GameManager>
         LevelManager.Instance.LoadCurrentLevel(true);
         var panel = UIManager.Instance.OpenUI<PanelGameplay>();
         panel.SetTemporaryRule(LevelManager.Instance.CurrentCutCount, 3);
+        panel.ConfigureTimer(LevelManager.Instance.CurrentLevelHasTimer, LevelManager.Instance.CurrentLevelTimeLimitSeconds);
     }
 
     public void ReplayLevel()
@@ -105,6 +106,7 @@ public sealed class GameManager : Singleton<GameManager>
         LevelManager.Instance.LoadCurrentLevel(true);
         var panel = UIManager.Instance.OpenUI<PanelGameplay>();
         panel.SetTemporaryRule(LevelManager.Instance.CurrentCutCount, 3);
+        panel.ConfigureTimer(LevelManager.Instance.CurrentLevelHasTimer, LevelManager.Instance.CurrentLevelTimeLimitSeconds);
     }
 
     private IEnumerator ShowHomeAfterLoading()

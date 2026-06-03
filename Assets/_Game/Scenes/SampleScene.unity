@@ -25558,104 +25558,204 @@ MonoBehaviour:
   levels:
   - prefab: {fileID: 8007558151084100803, guid: b38f975def1f04d4b962402ca3e8d8cd, type: 3}
     cutCount: 0
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 6299445489785142794, guid: 55964e022200343009727f40c093634f, type: 3}
     cutCount: 0
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 7467248139974745649, guid: f47f977ec6ee244a58f8e2a1ff8102c8, type: 3}
     cutCount: 0
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 9208349068746228859, guid: 60df2c9154cdf46d089ec08928684e0b, type: 3}
     cutCount: 1
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 8249365440883264522, guid: 6fc93229170b04c2eac4955d013befc8, type: 3}
     cutCount: 1
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 7907540551112515314, guid: 86e40ff82f2414dc0ab12114640496d1, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 3237489373066679536, guid: 64f293eb8766a4e36be598366bc63e09, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 2811872743696997295, guid: 1d529c1b400584995ac059fb80682097, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 4457390603175108196, guid: 4aeb05364bd5c46219cf05ff983b7455, type: 3}
     cutCount: 1
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 3470457788662672536, guid: de8b6341cc5d34bf4b88fbaa3915e80d, type: 3}
     cutCount: 1
+    hasTimer: 1
+    timeLimitSeconds: 60
   - prefab: {fileID: 5335326116181372211, guid: 46629b31a25654dd798bbdcf11846d22, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 4780060100761650155, guid: 2c83926006a3a4e67a925d407a2145fa, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 6466449258668454134, guid: 720b43eb9bd254dfd86ebe0fdf5b310d, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 1539675742165555749, guid: 82c0ac8b25bc4401a9bbb49341440579, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 3725323903070137747, guid: 1f8bcfc0d9dd147a5be3b4537a146c80, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 483038851975117055, guid: df8c42e0fed304948a448ef875e16f89, type: 3}
     cutCount: 1
+    hasTimer: 1
+    timeLimitSeconds: 0
   - prefab: {fileID: 8588125754631847563, guid: a2f43493e5f7540c089bae7d097a4670, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 7303804087105644429, guid: 2a7c56f5d0d49425baea001967e9e1b7, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 8241843329649446281, guid: 804f0dc74375d4392be761242fae7f77, type: 3}
     cutCount: 1
+    hasTimer: 1
+    timeLimitSeconds: 0
   - prefab: {fileID: 3263454067237609812, guid: 8d9b1e065f52841fd9df1434c3b693b5, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 5543378192732144689, guid: 16ea5bc4007bd4b32a9fcadb306e48b6, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 6329174761740824615, guid: e812c74ef16db45e6ab78fd31cb5388b, type: 3}
     cutCount: 1
+    hasTimer: 1
+    timeLimitSeconds: 0
   - prefab: {fileID: 7935776282478210717, guid: 2a9a098ffed6a484ba81a30f8b1f4f71, type: 3}
     cutCount: 1
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 505510039265897256, guid: 48482f3afef9a453a955571e099a3cf3, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 921490395667983235, guid: a859deddc8fd44cf194501e4ed211d96, type: 3}
     cutCount: 1
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 9115769267148484484, guid: 74f3405f400a5491ab03b38953dc53f5, type: 3}
     cutCount: 1
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 3872136511391997499, guid: f093ae1cd41e14692a79577e1105c22a, type: 3}
     cutCount: 1
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 1420721913055837477, guid: d9f3f8f04b8424e3db753cd517ea88b8, type: 3}
     cutCount: 2
+    hasTimer: 1
+    timeLimitSeconds: 0
   - prefab: {fileID: 1779313622252960693, guid: d816cf158b01a474ea573c6f738cc5b1, type: 3}
     cutCount: 1
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 4474925297232800494, guid: 84bb8f1e8810e44ab8789305813668bf, type: 3}
     cutCount: 1
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 3789544776149065939, guid: e82ddd665d18d42e099b4c701cd434e9, type: 3}
     cutCount: 1
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 2193329094538576640, guid: 1aec48db89b294f7093b600aa8e129eb, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 747728609032305249, guid: 61d9768a1e4c54335a0b2089b006df34, type: 3}
     cutCount: 2
+    hasTimer: 1
+    timeLimitSeconds: 0
   - prefab: {fileID: 6752360821638175169, guid: 51834df5bc1784ea0a00123cf437d138, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 8542837841585485723, guid: 91ccf43f401e34144927e0aee2536ce1, type: 3}
     cutCount: 1
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 4521014418084579905, guid: a65b966743e0d445a9584daad9ec81b3, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 5812052255328429394, guid: 5ec6cb71ebb854005a288146f1079c3e, type: 3}
     cutCount: 2
+    hasTimer: 1
+    timeLimitSeconds: 0
   - prefab: {fileID: 4981570743185058309, guid: 146a8a4d21dcc4c99aa0fe08b156a115, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 3970863934608953889, guid: b83de0c418dbd45aa93c6ce49c885cf3, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 1326820285247444251, guid: c59d1b3679bff4bcb9c3b1af9969c858, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 5761833261428051162, guid: bb097c81d438a464080a9c9525d22915, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 8331078756286328669, guid: 4b3fd02e76b174a02a810e3e77a52e18, type: 3}
     cutCount: 2
+    hasTimer: 1
+    timeLimitSeconds: 0
   - prefab: {fileID: 142372184158306022, guid: 2a5fa9192fb934f1795586307cfe01d9, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 4950526411740737963, guid: b49bce8aa0e8449a79f5a91e004860b4, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 2361645016487253495, guid: 88c4708d63be3403faf6723c4abe99a6, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 7720888331148176081, guid: 469cd0ecde2a3411f8aba71967705bb5, type: 3}
     cutCount: 2
+    hasTimer: 1
+    timeLimitSeconds: 0
   - prefab: {fileID: 1885002032321798489, guid: 610394b1d645d4744bc08eeafec0ac57, type: 3}
     cutCount: 2
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 1154585956102277851, guid: 5eac07467cb9e4efea3214be7812a7e0, type: 3}
     cutCount: 1
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 3506733942778184984, guid: 2e8a8b43c08d2424c981337f554fca80, type: 3}
     cutCount: 0
+    hasTimer: 0
+    timeLimitSeconds: 0
   - prefab: {fileID: 1729855700356702633, guid: c8c6fefd52f094e06ae3885d638106a3, type: 3}
     cutCount: 2
+    hasTimer: 1
+    timeLimitSeconds: 0
 --- !u!1 &1098276675
 GameObject:
   m_ObjectHideFlags: 0

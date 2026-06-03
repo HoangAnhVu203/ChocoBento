@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,12 +28,19 @@ public class PanelGameplay : UICanvas
     [SerializeField] private Image[] starImages;
     [SerializeField] private Sprite starAvailableSprite;
     [SerializeField] private Sprite starUsedSprite;
+    [SerializeField, Min(0f)] private float starLossFadeDuration = 0.2f;
     [SerializeField] private RandomObjectSpawner[] randomObjectSpawners;
+
+    [Header("Timer")]
+    [SerializeField] private GameObject timeSys;
+    [SerializeField] private Text timeTxt;
 
     private int remainingKnifeCount;
     private int remainingStarCount;
     private bool isBonusKnifeActive;
     private bool currentCanCut;
+    private Coroutine timerCoroutine;
+    private Coroutine starLossCoroutine;
 
     public int RemainingStarCount => remainingStarCount;
     public event Action CutApplied;
@@ -58,10 +66,14 @@ public class PanelGameplay : UICanvas
         SetCanCut(false);
         RefreshHintButtonVisibility();
         ResolveRandomObjectSpawners();
+        ConfigureTimer(false, 0f);
     }
 
     private void OnDisable()
     {
+        StopTimer();
+        StopStarLossAnimation();
+
         if (cutButton != null)
         {
             cutButton.onClick.RemoveListener(HandleCutClicked);
@@ -128,6 +140,26 @@ public class PanelGameplay : UICanvas
         SetCanCut(currentCanCut);
         RefreshCutControlsVisibility();
         RefreshHintButtonVisibility();
+    }
+
+    public void ConfigureTimer(bool hasTimer, float durationSeconds)
+    {
+        StopTimer();
+
+        if (timeSys != null)
+        {
+            timeSys.SetActive(hasTimer);
+        }
+
+        if (!hasTimer)
+        {
+            SetTimerText(0f);
+            return;
+        }
+
+        durationSeconds = Mathf.Max(1f, durationSeconds);
+        SetTimerText(durationSeconds);
+        timerCoroutine = StartCoroutine(RunTimer(durationSeconds));
     }
 
     public void SetLevelText(int levelNumber)
@@ -397,8 +429,9 @@ public class PanelGameplay : UICanvas
 
         if (remainingStarCount > 0)
         {
+            var previousStarCount = remainingStarCount;
             remainingStarCount--;
-            RefreshStarImages();
+            RefreshStarImages(true, previousStarCount);
             if (remainingStarCount <= 0)
             {
                 GameManager.Instance.LoseLevel();
@@ -409,6 +442,57 @@ public class PanelGameplay : UICanvas
     private bool HasCutResource()
     {
         return remainingKnifeCount > 0 || remainingStarCount > 0;
+    }
+
+    private IEnumerator RunTimer(float durationSeconds)
+    {
+        float remainingSeconds = durationSeconds;
+        while (remainingSeconds > 0f)
+        {
+            SetTimerText(remainingSeconds);
+            remainingSeconds -= Time.deltaTime;
+            yield return null;
+        }
+
+        SetTimerText(0f);
+        timerCoroutine = null;
+        ApplyTimerPenalty();
+    }
+
+    private void StopTimer()
+    {
+        if (timerCoroutine == null)
+        {
+            return;
+        }
+
+        StopCoroutine(timerCoroutine);
+        timerCoroutine = null;
+    }
+
+    private void ApplyTimerPenalty()
+    {
+        if (remainingStarCount <= 0)
+        {
+            return;
+        }
+
+        var previousStarCount = remainingStarCount;
+        remainingStarCount--;
+        RefreshStarImages(true, previousStarCount);
+    }
+
+    private void SetTimerText(float seconds)
+    {
+        if (timeTxt == null)
+        {
+            return;
+        }
+
+        int wholeSeconds = Mathf.Max(0, Mathf.CeilToInt(seconds));
+        int minutes = wholeSeconds / 60;
+        int secondsPart = wholeSeconds % 60;
+        timeTxt.text = $"{minutes:00}:{secondsPart:00}";
     }
 
     private void ResolveHudImages()
@@ -535,9 +619,18 @@ public class PanelGameplay : UICanvas
         RefreshAddKnifeAmount();
     }
 
-    private void RefreshStarImages()
+    private void RefreshStarImages(bool animateLostStars = false, int previousStarCount = -1)
     {
         ResolveHudImages();
+
+        if (!animateLostStars)
+        {
+            StopStarLossAnimation();
+        }
+
+        int previousLostCount = Mathf.Clamp(startStarCount - previousStarCount, 0, startStarCount);
+        int currentLostCount = Mathf.Clamp(startStarCount - remainingStarCount, 0, startStarCount);
+
         for (int i = 0; i < starImages.Length; i++)
         {
             if (starImages[i] == null)
@@ -545,9 +638,88 @@ public class PanelGameplay : UICanvas
                 continue;
             }
 
-            var isAvailable = i < remainingStarCount;
+            starImages[i].gameObject.SetActive(i < startStarCount);
+            bool isAnimatingNewLoss = animateLostStars && i >= previousLostCount && i < currentLostCount;
+            var isAvailable = isAnimatingNewLoss || IsStarAvailable(i, remainingStarCount);
             ApplyResourceImageState(starImages[i], isAvailable, starAvailableSprite, starUsedSprite);
         }
+
+        if (animateLostStars && previousStarCount > remainingStarCount)
+        {
+            StopStarLossAnimation();
+            starLossCoroutine = StartCoroutine(AnimateLostStars(previousStarCount, remainingStarCount));
+        }
+    }
+
+    private IEnumerator AnimateLostStars(int previousStarCount, int currentStarCount)
+    {
+        int previousLostCount = Mathf.Clamp(startStarCount - previousStarCount, 0, startStarCount);
+        int currentLostCount = Mathf.Clamp(startStarCount - currentStarCount, 0, startStarCount);
+
+        for (int i = previousLostCount; i < currentLostCount && i < starImages.Length; i++)
+        {
+            var image = starImages[i];
+            if (image == null)
+            {
+                continue;
+            }
+
+            image.gameObject.SetActive(true);
+            yield return FadeStarImage(image, 1f, 0f);
+            ApplyResourceImageState(image, false, starAvailableSprite, starUsedSprite);
+            yield return FadeStarImage(image, 0f, 1f);
+        }
+
+        starLossCoroutine = null;
+    }
+
+    private IEnumerator FadeStarImage(Image image, float fromAlpha, float toAlpha)
+    {
+        if (starLossFadeDuration <= 0f)
+        {
+            SetImageAlpha(image, toAlpha);
+            yield break;
+        }
+
+        float elapsed = 0f;
+        while (elapsed < starLossFadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / starLossFadeDuration);
+            SetImageAlpha(image, Mathf.Lerp(fromAlpha, toAlpha, t));
+            yield return null;
+        }
+
+        SetImageAlpha(image, toAlpha);
+    }
+
+    private void StopStarLossAnimation()
+    {
+        if (starLossCoroutine == null)
+        {
+            return;
+        }
+
+        StopCoroutine(starLossCoroutine);
+        starLossCoroutine = null;
+    }
+
+    private bool IsStarAvailable(int starIndex, int starCount)
+    {
+        if (starIndex < 0 || starIndex >= startStarCount)
+        {
+            return false;
+        }
+
+        int lostCount = Mathf.Clamp(startStarCount - starCount, 0, startStarCount);
+        return starIndex >= lostCount;
+    }
+
+    private static void SetImageAlpha(Image image, float alpha)
+    {
+        var color = image.color;
+        color.a = alpha;
+        image.color = color;
     }
 
     private static void ApplyResourceImageState(Image image, bool isAvailable, Sprite availableSprite, Sprite usedSprite)

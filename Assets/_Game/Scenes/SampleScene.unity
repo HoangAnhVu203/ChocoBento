@@ -25501,11 +25501,15 @@ MonoBehaviour:
   musicSource: {fileID: 1802065622}
   sfxSource: {fileID: 1296419455}
   bgmGameplay: {fileID: 0}
-  sfxMergeBall: {fileID: 0}
-  sfxWin: {fileID: 0}
-  sfxLose: {fileID: 0}
-  sfxButton: {fileID: 0}
-  sfxClick: {fileID: 0}
+  sfxWin: {fileID: 8300000, guid: 12a7ed904376b44bd8145a24fe7ea36b, type: 3}
+  sfxLose: {fileID: 8300000, guid: 329dd1d4e8caa4c9898418337ab617c9, type: 3}
+  sfxButton: {fileID: 8300000, guid: 56cbe698f4e094efaba9b490ca4f18ee, type: 3}
+  sfxClick: {fileID: 8300000, guid: 56cbe698f4e094efaba9b490ca4f18ee, type: 3}
+  sfxKnifeLift: {fileID: 8300000, guid: c173a85d2400340bcaa34b3dc7ade2be, type: 3}
+  sfxKnifeDrop: {fileID: 8300000, guid: eb42355aa97ea43a69806a65d7d5be96, type: 3}
+  sfxChocolateLift: {fileID: 8300000, guid: 13b01ff23ea7c4d0880da5635a0f1f42, type: 3}
+  sfxChocolateDrop: {fileID: 8300000, guid: 050623a62beb34cb587091e78eb913ff, type: 3}
+  sfxChocolateCut: {fileID: 8300000, guid: cdc038d6432d448fd919758f167086c4, type: 3}
 --- !u!1 &925518273
 GameObject:
   m_ObjectHideFlags: 0
@@ -40819,7 +40823,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: c12b6d6fe4ede49ffbbe5dad115e65c3, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

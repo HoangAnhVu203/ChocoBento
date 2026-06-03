@@ -8,21 +8,22 @@ public class AudioManager : Singleton<AudioManager>
 
     [Header("Clips")]
     public AudioClip bgmGameplay;
-    public AudioClip sfxMergeBall;
     public AudioClip sfxWin;
     public AudioClip sfxLose;
     public AudioClip sfxButton;
     public AudioClip sfxClick;
+    public AudioClip sfxKnifeLift;
+    public AudioClip sfxKnifeDrop;
+    public AudioClip sfxChocolateLift;
+    public AudioClip sfxChocolateDrop;
+    public AudioClip sfxChocolateCut;
+
+    private bool musicStarted;
 
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
         ApplySettings();
-    }
-
-    void Start()
-    {
-        PlayMusic(bgmGameplay);
     }
 
     public void PlaySFX(AudioClip clip)
@@ -36,6 +37,7 @@ public class AudioManager : Singleton<AudioManager>
 
     public void PlayMusic(AudioClip clip)
     {
+        musicStarted = true;
         if (clip == null) return;
         if (!IsMusicOn()) return;
         if (musicSource == null) return;
@@ -50,10 +52,19 @@ public class AudioManager : Singleton<AudioManager>
     // ---- helper ----
 
     public void PlaySoundClickLine() => PlaySFX(sfxClick);
-    public void PlayMergeBall() => PlaySFX(sfxMergeBall);
     public void PlayWin() => PlaySFX(sfxWin);
     public void PlayLose() => PlaySFX(sfxLose);
     public void PlayButton() => PlaySFX(sfxButton);
+    public void PlayBackgroundMusic()
+    {
+        var clip = bgmGameplay != null ? bgmGameplay : musicSource != null ? musicSource.clip : null;
+        PlayMusic(clip);
+    }
+    public void PlayKnifeLift() => PlaySFX(sfxKnifeLift);
+    public void PlayKnifeDrop() => PlaySFX(sfxKnifeDrop);
+    public void PlayChocolateLift() => PlaySFX(sfxChocolateLift);
+    public void PlayChocolateDrop() => PlaySFX(sfxChocolateDrop);
+    public void PlayChocolateCut() => PlaySFX(sfxChocolateCut);
 
     //---------------- SETTING ----------------//
     public static bool IsSoundOn() => PlayerPrefs.GetInt("SOUND_ON", 1) == 1;
@@ -102,7 +113,7 @@ public class AudioManager : Singleton<AudioManager>
 
         musicSource.mute = !isOn;
 
-        if (isOn)
+        if (isOn && musicStarted)
         {
             if (musicSource.clip == null)
                 musicSource.clip = bgmGameplay;

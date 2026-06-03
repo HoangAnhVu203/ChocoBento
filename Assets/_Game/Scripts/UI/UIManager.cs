@@ -23,8 +23,10 @@ public class UIManager : Singleton<UIManager>
     {
         T canvas = GetUI<T>();
 
+        EnsureButtonClickSounds(canvas);
         canvas.SetUp();
         canvas.Open();
+        EnsureButtonClickSounds(canvas);
 
         return canvas;
     }
@@ -77,6 +79,7 @@ public class UIManager : Singleton<UIManager>
         {
             T prefab = GetUIPrefabs<T>();
             T canvas = Instantiate(prefab, parent);
+            EnsureButtonClickSounds(canvas);
 
             canvasActives[typeof(T)] = canvas;
         }
@@ -88,6 +91,31 @@ public class UIManager : Singleton<UIManager>
     public T GetUIPrefabs<T>() where T : UICanvas
     {
         return canvasPrefabs[typeof(T)] as T;
+    }
+
+    private void EnsureButtonClickSounds(UICanvas canvas)
+    {
+        if (canvas == null)
+        {
+            return;
+        }
+
+        var buttons = canvas.GetComponentsInChildren<UnityEngine.UI.Button>(true);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            if (buttons[i] == null)
+            {
+                continue;
+            }
+
+            var clickSound = buttons[i].GetComponent<UIButtonClickSound>();
+            if (clickSound == null)
+            {
+                clickSound = buttons[i].gameObject.AddComponent<UIButtonClickSound>();
+            }
+
+            clickSound.Bind();
+        }
     }
 
     //Dong tat ca

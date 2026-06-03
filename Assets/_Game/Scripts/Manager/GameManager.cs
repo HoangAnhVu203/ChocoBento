@@ -81,6 +81,7 @@ public sealed class GameManager : Singleton<GameManager>
 
         LastWinStarCount = PanelGameplay.Instance != null ? PanelGameplay.Instance.RemainingStarCount : 3;
         State = GameState.Win;
+        AudioManager.Instance.PlayWin();
         UIManager.Instance.CloseUIDirectly<PanelGameplay>();
 
         winCoroutine = StartCoroutine(ShowWinAfterParticles());
@@ -93,6 +94,7 @@ public sealed class GameManager : Singleton<GameManager>
             return;
         }
 
+        AudioManager.Instance.PlayLose();
         ChangeState(GameState.Lose);
     }
 
@@ -126,6 +128,7 @@ public sealed class GameManager : Singleton<GameManager>
         }
 
         loadingCoroutine = null;
+        AudioManager.Instance.PlayBackgroundMusic();
         ChangeState(GameState.Home);
     }
 

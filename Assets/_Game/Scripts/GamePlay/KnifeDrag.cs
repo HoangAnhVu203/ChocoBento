@@ -50,6 +50,7 @@ public sealed class KnifeDrag : MonoBehaviour, IDraggableGameplay
         isDragging = true;
         dragOffset = transform.position - pointerWorldPosition;
         GameplayLevelController.Instance?.SetSelectedKnife(this);
+        AudioManager.Instance.PlayKnifeLift();
         DragStarted?.Invoke();
     }
 
@@ -97,6 +98,7 @@ public sealed class KnifeDrag : MonoBehaviour, IDraggableGameplay
         RefreshCutData(true);
         GameplayLevelController.Instance?.SetSelectedKnife(this);
         GameplayLevelController.Instance?.SetCanCut(HasValidCut);
+        AudioManager.Instance.PlayKnifeDrop();
         DragEnded?.Invoke();
     }
 

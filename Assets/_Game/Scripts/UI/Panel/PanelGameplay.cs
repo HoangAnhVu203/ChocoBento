@@ -309,6 +309,7 @@ public class PanelGameplay : UICanvas
             return;
         }
 
+        AudioManager.Instance.PlayChocolateCut();
         ConsumeTemporaryCutResource();
         SetCanCut(currentCanCut);
         CutApplied?.Invoke();

@@ -66,6 +66,7 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
         ClearStrawberryMismatchMarkers();
         dragLiftVisual?.Lift();
         placementPreview?.Show(this);
+        AudioManager.Instance.PlayChocolateLift();
         dragOffset = transform.position - pointerWorldPosition;
     }
 
@@ -81,6 +82,7 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
         {
             placementPreview?.Hide();
             dragLiftVisual?.Drop();
+            AudioManager.Instance.PlayChocolateDrop();
             return;
         }
 
@@ -108,6 +110,7 @@ public sealed class ChocolatePiece : MonoBehaviour, IDraggableGameplay
 
         SetInTargetTray(acceptedByTray);
         dragLiftVisual?.Drop();
+        AudioManager.Instance.PlayChocolateDrop();
         PlayDropParticles();
         GameplayLevelController.Instance?.LogTargetTrayProgress();
     }

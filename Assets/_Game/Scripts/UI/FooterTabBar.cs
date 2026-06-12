@@ -35,6 +35,9 @@ public class FooterTabBar : UICanvas
     [SerializeField] private float iconBaseY = 0f;
     [SerializeField] private TabTransitionController tabTransition;
 
+    [Header("Position")]
+    [SerializeField] private float visibleY = 200f;
+
     private int currentIndex = -1;
     private Coroutine slideCo;
     private bool suppressNotify;
@@ -60,7 +63,7 @@ public class FooterTabBar : UICanvas
 
     private void OnEnable()
     {
-        SetFooterY(100f);
+        SetFooterY(visibleY);
         AutoBind();
         StartCoroutine(ResetDefaultNextFrame());
     }

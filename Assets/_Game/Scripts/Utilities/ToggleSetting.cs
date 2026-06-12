@@ -28,6 +28,13 @@ public class ToggleSetting : MonoBehaviour
 
     void Start()
     {
+        ResolveToggle();
+        if (toggle == null)
+        {
+            return;
+        }
+
+        toggle.onValueChanged.RemoveListener(OnToggleChanged);
         toggle.onValueChanged.AddListener(OnToggleChanged);
 
         // Load trạng thái từ PlayerPrefs
@@ -37,6 +44,7 @@ public class ToggleSetting : MonoBehaviour
         toggle.SetIsOnWithoutNotify(isOn);
 
         ApplyVisual(isOn);
+        ApplySetting(isOn);
     }
 
     bool LoadState()
@@ -66,11 +74,6 @@ public class ToggleSetting : MonoBehaviour
 
             case SettingType.Music:
                 PlayerPrefs.SetInt("MUSIC_ON", isOn ? 1 : 0);
-
-                // Ví dụ:
-                if (AudioManager.Instance.musicSource)
-                    AudioManager.Instance.musicSource.mute = !isOn;
-
                 break;
 
             case SettingType.Vibration:
@@ -85,12 +88,16 @@ public class ToggleSetting : MonoBehaviour
     {
         ApplyVisual(isOn);
         SaveState(isOn);
+        ApplySetting(isOn);
     }
 
     void ApplyVisual(bool isOn)
     {
         // Move checkmark
-        checkmark.anchoredPosition = isOn ? rightPos : leftPos;
+        if (checkmark != null)
+        {
+            checkmark.anchoredPosition = isOn ? rightPos : leftPos;
+        }
 
         // Change background sprite
         if (backgroundImage != null)
@@ -108,4 +115,32 @@ public class ToggleSetting : MonoBehaviour
                 : checkmarkOffSprite;
         }
     }
-}
+
+    private void ApplySetting(bool isOn)
+    {
+        switch (settingType)
+        {
+            case SettingType.Sound:
+                AudioManager.Instance.SetSoundOn(isOn);
+                break;
+
+            case SettingType.Music:
+                AudioManager.Instance.SetMusicOn(isOn);
+                break;
+
+            case SettingType.Vibration:
+                AudioManager.SetVibrationOn(isOn);
+                break;
+        }
+    }
+
+    private void ResolveToggle()
+    {
+        if (toggle != null)
+        {
+            return;
+        }
+
+        toggle = GetComponent<Toggle>();
+    }
+} 

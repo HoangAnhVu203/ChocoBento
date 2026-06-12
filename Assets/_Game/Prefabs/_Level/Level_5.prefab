@@ -204,14 +204,14 @@ MonoBehaviour:
   - targetSlots:
     - {fileID: 6960842680637891938}
     - {fileID: 368153904700667176}
-    - {fileID: 2763097750726287502}
-    - {fileID: 2142450539787361764}
     gridCells: []
   - targetSlots:
     - {fileID: 7803187044661976566}
+    - {fileID: 2763097750726287502}
+    gridCells: []
+  - targetSlots:
     - {fileID: 462065505923583583}
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 2142450539787361764}
     gridCells: []
 --- !u!1 &8146579338084566476
 GameObject:

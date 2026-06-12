@@ -41,7 +41,8 @@ public class PanelLose : UICanvas
 
     private void HandleReplayClicked()
     {
-        GameManager.Instance.ReplayLevel();
+        var loseHeartPanel = UIManager.Instance.OpenUI<PanelLoseHeart>();
+        loseHeartPanel.SetAction(PanelLoseHeart.LoseHeartAction.Replay);
     }
 
     private void HandleHomeClicked()

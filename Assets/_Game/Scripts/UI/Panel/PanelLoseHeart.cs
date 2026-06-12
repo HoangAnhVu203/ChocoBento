@@ -14,11 +14,17 @@ public class PanelLoseHeart : UICanvas
     private void OnEnable()
     {
         BindFreeButton();
+        BindHeartChanged();
+        RefreshSpendHeartButtons();
     }
 
     private void OnDisable()
     {
         UnbindFreeButton();
+        if (HeartManager.Instance != null)
+        {
+            HeartManager.Instance.HeartChanged -= HandleHeartChanged;
+        }
     }
 
     public void SetAction(LoseHeartAction nextAction)
@@ -37,6 +43,7 @@ public class PanelLoseHeart : UICanvas
     {
         if (HeartManager.Instance == null || !HeartManager.Instance.TrySpendHeart())
         {
+            RefreshSpendHeartButtons();
             return;
         }
 
@@ -76,6 +83,41 @@ public class PanelLoseHeart : UICanvas
         }
     }
 
+    private void BindHeartChanged()
+    {
+        if (HeartManager.Instance == null)
+        {
+            return;
+        }
+
+        HeartManager.Instance.HeartChanged -= HandleHeartChanged;
+        HeartManager.Instance.HeartChanged += HandleHeartChanged;
+        HeartManager.Instance.RefreshHeartDisplay();
+    }
+
+    private void HandleHeartChanged(int heartCount)
+    {
+        RefreshSpendHeartButtons();
+    }
+
+    private void RefreshSpendHeartButtons()
+    {
+        bool canSpendHeart = HeartManager.Instance != null && HeartManager.Instance.HeartCount > 0;
+        var buttons = GetComponentsInChildren<Button>(true);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            if (IsFreeButton(buttons[i]))
+            {
+                continue;
+            }
+
+            if (IsSpendHeartButton(buttons[i]))
+            {
+                buttons[i].interactable = canSpendHeart;
+            }
+        }
+    }
+
     private void UnbindFreeButton()
     {
         var buttons = GetComponentsInChildren<Button>(true);
@@ -102,5 +144,24 @@ public class PanelLoseHeart : UICanvas
 
         var text = button.GetComponentInChildren<Text>(true);
         return text != null && text.text.IndexOf("Free", System.StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    private bool IsSpendHeartButton(Button button)
+    {
+        if (button == null)
+        {
+            return false;
+        }
+
+        if (button.name.IndexOf("Agree", System.StringComparison.OrdinalIgnoreCase) >= 0
+            || button.name.IndexOf("Heart", System.StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            return true;
+        }
+
+        var text = button.GetComponentInChildren<Text>(true);
+        return text != null
+            && (text.text.IndexOf("Agree", System.StringComparison.OrdinalIgnoreCase) >= 0
+                || text.text.IndexOf("-1", System.StringComparison.OrdinalIgnoreCase) >= 0);
     }
 } 

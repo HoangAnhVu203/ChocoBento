@@ -14,12 +14,19 @@ public class PanelGameplay : UICanvas
     [SerializeField] private Button cutButton;
     [SerializeField] private Image cutButtonImage;
     [SerializeField] private Button addKnifeButton;
+    [SerializeField] private Image addKnifeButtonImage;
     [SerializeField] private Text addKnifeAmountText;
     [SerializeField] private Button hintButton;
+    [SerializeField] private Image hintButtonImage;
     [SerializeField] private Text hintAmountText;
     [SerializeField] private Text levelText;
     [SerializeField] private Sprite cutEnabledSprite;
     [SerializeField] private Sprite cutDisabledSprite;
+    [Header("Item Button Sprites")]
+    [SerializeField] private Sprite addKnifeAvailableSprite;
+    [SerializeField] private Sprite addKnifeEmptySprite;
+    [SerializeField] private Sprite hintAvailableSprite;
+    [SerializeField] private Sprite hintEmptySprite;
     [SerializeField] private Transform knifeRoot;
     [SerializeField] private Image[] knifeImages;
     [SerializeField] private Sprite knifeAvailableSprite;
@@ -282,6 +289,40 @@ public class PanelGameplay : UICanvas
                 addKnifeAmountText = texts[i];
                 return;
             }
+        }
+    }
+
+    private void ResolveAddKnifeButtonImage()
+    {
+        if (addKnifeButtonImage == null)
+        {
+            ResolveAddKnifeButton();
+            if (addKnifeButton != null)
+            {
+                addKnifeButtonImage = addKnifeButton.GetComponent<Image>();
+            }
+        }
+
+        if (addKnifeAvailableSprite == null && addKnifeButtonImage != null)
+        {
+            addKnifeAvailableSprite = addKnifeButtonImage.sprite;
+        }
+    }
+
+    private void ResolveHintButtonImage()
+    {
+        if (hintButtonImage == null)
+        {
+            ResolveHintButton();
+            if (hintButton != null)
+            {
+                hintButtonImage = hintButton.GetComponent<Image>();
+            }
+        }
+
+        if (hintAvailableSprite == null && hintButtonImage != null)
+        {
+            hintAvailableSprite = hintButtonImage.sprite;
         }
     }
 
@@ -564,13 +605,17 @@ public class PanelGameplay : UICanvas
     private void RefreshAddKnifeAmount()
     {
         ResolveAddKnifeAmountText();
-        if (addKnifeAmountText == null)
-        {
-            return;
-        }
+        ResolveAddKnifeButtonImage();
 
         int knifeCount = ItemManager.Instance != null ? ItemManager.Instance.KnifeCount : 0;
-        addKnifeAmountText.text = knifeCount > 0 ? knifeCount.ToString() : "+";
+        bool hasKnife = knifeCount > 0;
+
+        if (addKnifeAmountText != null)
+        {
+            addKnifeAmountText.text = hasKnife ? "1" : string.Empty;
+        }
+
+        ApplyButtonSprite(addKnifeButtonImage, hasKnife, addKnifeAvailableSprite, addKnifeEmptySprite);
     }
 
     private void ResolveHintAmountText()
@@ -600,13 +645,17 @@ public class PanelGameplay : UICanvas
     private void RefreshHintAmount()
     {
         ResolveHintAmountText();
-        if (hintAmountText == null)
-        {
-            return;
-        }
+        ResolveHintButtonImage();
 
         int hintCount = ItemManager.Instance != null ? ItemManager.Instance.HintCount : 0;
-        hintAmountText.text = hintCount > 0 ? hintCount.ToString() : "+";
+        bool hasHint = hintCount > 0;
+
+        if (hintAmountText != null)
+        {
+            hintAmountText.text = hasHint ? "1" : string.Empty;
+        }
+
+        ApplyButtonSprite(hintButtonImage, hasHint, hintAvailableSprite, hintEmptySprite);
     }
 
     private void HandleHintItemChanged(int hintCount)
@@ -733,6 +782,22 @@ public class PanelGameplay : UICanvas
         }
 
         image.color = isAvailable ? Color.white : new Color(1f, 1f, 1f, 0.35f);
+    }
+
+    private static void ApplyButtonSprite(Image image, bool isAvailable, Sprite availableSprite, Sprite emptySprite)
+    {
+        if (image == null)
+        {
+            return;
+        }
+
+        var sprite = isAvailable ? availableSprite : emptySprite;
+        if (sprite != null)
+        {
+            image.sprite = sprite;
+        }
+
+        image.color = Color.white;
     }
 
     private void ResolveImageRoot(ref Transform root, string rootName)

@@ -270,11 +270,11 @@ MonoBehaviour:
   steps:
   - targetSlots:
     - {fileID: 8032272122557109802}
+    - {fileID: 6716528771499203726}
+    - {fileID: 8758738522432774827}
     gridCells: []
   - targetSlots:
     - {fileID: 1122128158261321398}
-    - {fileID: 8758738522432774827}
-    - {fileID: 6716528771499203726}
     gridCells: []
 --- !u!1 &9109258680118793288
 GameObject:

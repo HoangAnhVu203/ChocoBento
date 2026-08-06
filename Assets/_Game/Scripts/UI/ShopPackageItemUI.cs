@@ -10,16 +10,19 @@ public sealed class ShopPackageItemUI : MonoBehaviour
     [SerializeField] private Text priceText;
 
     private PanelShop panelShop;
+    private bool isPurchasing;
 
     private void OnEnable()
     {
         BindButton();
+        SubscribeIap();
         Refresh();
     }
 
     private void OnDisable()
     {
         UnbindButton();
+        UnsubscribeIap();
     }
 
     public bool UsesButton(Button button)
@@ -75,7 +78,7 @@ public sealed class ShopPackageItemUI : MonoBehaviour
 
         if (priceText != null && !string.IsNullOrEmpty(packageConfig.PriceText))
         {
-            priceText.text = packageConfig.PriceText;
+            priceText.text = GetDisplayPrice();
         }
 
     }
@@ -87,19 +90,23 @@ public sealed class ShopPackageItemUI : MonoBehaviour
             return;
         }
 
-        if (panelShop == null)
+        if (isPurchasing)
         {
-            panelShop = GetComponentInParent<PanelShop>(true);
-        }
-
-        if (panelShop != null)
-        {
-            panelShop.BuyPackage(packageConfig);
             return;
         }
 
-        bool success = RewardManager.Instance.ClaimPackage(packageConfig);
-        ShowBuyResult(success);
+        isPurchasing = true;
+        SetButtonState(false, "Loading...");
+
+        if (RemoveAdsManager.Instance != null)
+        {
+            RemoveAdsManager.Instance.BuyPackage(packageConfig);
+            return;
+        }
+
+        isPurchasing = false;
+        SetButtonState(true, GetDisplayPrice());
+        ShowBuyResult(false);
     }
 
     private static void ShowBuyResult(bool success)
@@ -142,5 +149,72 @@ public sealed class ShopPackageItemUI : MonoBehaviour
     private static bool IsPriceText(string text)
     {
         return !string.IsNullOrEmpty(text) && text.IndexOf("đ", System.StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    private string GetDisplayPrice()
+    {
+        if (RemoveAdsManager.Instance != null
+            && RemoveAdsManager.Instance.TryGetLocalizedPrice(packageConfig, out string storePrice))
+        {
+            return storePrice;
+        }
+
+        return packageConfig != null ? packageConfig.PriceText : string.Empty;
+    }
+
+    private void SetButtonState(bool interactable, string text)
+    {
+        if (buyButton != null)
+        {
+            buyButton.interactable = interactable;
+        }
+
+        if (priceText != null)
+        {
+            priceText.text = text;
+        }
+    }
+
+    private void SubscribeIap()
+    {
+        if (RemoveAdsManager.Instance == null)
+        {
+            return;
+        }
+
+        RemoveAdsManager.Instance.PricesUpdated -= HandlePricesUpdated;
+        RemoveAdsManager.Instance.PricesUpdated += HandlePricesUpdated;
+        RemoveAdsManager.Instance.PurchaseFinished -= HandlePurchaseFinished;
+        RemoveAdsManager.Instance.PurchaseFinished += HandlePurchaseFinished;
+    }
+
+    private void UnsubscribeIap()
+    {
+        if (RemoveAdsManager.Instance == null)
+        {
+            return;
+        }
+
+        RemoveAdsManager.Instance.PricesUpdated -= HandlePricesUpdated;
+        RemoveAdsManager.Instance.PurchaseFinished -= HandlePurchaseFinished;
+    }
+
+    private void HandlePricesUpdated()
+    {
+        if (!isPurchasing)
+        {
+            Refresh();
+        }
+    }
+
+    private void HandlePurchaseFinished(string storeProductId, bool success)
+    {
+        if (packageConfig == null || packageConfig.StoreProductId != storeProductId)
+        {
+            return;
+        }
+
+        isPurchasing = false;
+        SetButtonState(true, GetDisplayPrice());
     }
 }

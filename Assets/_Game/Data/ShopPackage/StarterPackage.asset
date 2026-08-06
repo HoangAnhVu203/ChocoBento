@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5e127b1f88e43a9afa190783f2fa5e, type: 3}
   m_Name: StarterPackage
   m_EditorClassIdentifier: Assembly-CSharp::ShopPackageConfig
-  packageId: 1
+  packageId: com.catcutschocolate.atomicsoft.removeads
   packageName: Starter Package
-  description: '*Remove force ads only'
+  description: '*Remove all ads'
   packageType: 0
-  productId: 1
+  productId: com.catcutschocolate.atomicsoft.removeads
   priceText: "36.000 \u0111"
   rewards:
   - type: 5

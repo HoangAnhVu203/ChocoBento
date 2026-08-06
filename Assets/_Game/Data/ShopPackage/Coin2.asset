@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5e127b1f88e43a9afa190783f2fa5e, type: 3}
   m_Name: Coin2
   m_EditorClassIdentifier: Assembly-CSharp::ShopPackageConfig
-  packageId: 4
+  packageId: com.catcutschocolate.atomicsoft.coins15000
   packageName: Coin2
   description: 
   packageType: 1
-  productId: 4
+  productId: com.catcutschocolate.atomicsoft.coins15000
   priceText: "79.000 \u0111"
   rewards:
   - type: 0
-    amount: 12600
+    amount: 15000

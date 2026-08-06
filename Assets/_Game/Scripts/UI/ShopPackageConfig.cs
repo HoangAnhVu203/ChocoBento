@@ -22,6 +22,9 @@ public sealed class ShopPackageConfig : ScriptableObject
     public string Description => description;
     public ShopPackageType PackageType => packageType;
     public string ProductId => productId;
+    public string StoreProductId => !string.IsNullOrWhiteSpace(productId) && !int.TryParse(productId, out _)
+        ? productId
+        : packageId;
     public string PriceText => priceText;
     public RewardData[] Rewards => rewards;
 
